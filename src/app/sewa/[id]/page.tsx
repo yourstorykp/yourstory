@@ -4,10 +4,9 @@ import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { items, settings } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
-import { BookingForm } from "@/components/sewa/booking-form";
+import { BookingModal } from "@/components/sewa/booking-modal";
 
 export const revalidate = 120;
 
@@ -108,8 +107,12 @@ export default async function ItemDetailPage({
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="mb-3 font-heading text-lg font-semibold">Form Booking</h2>
-            <BookingForm
+            <h2 className="mb-3 font-heading text-lg font-semibold">Booking</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Pilih tanggal sewa dan jumlah unit, lalu tim kami akan konfirmasi
+              ketersediaan & pembayaran via WhatsApp.
+            </p>
+            <BookingModal
               item={{
                 id: item.id,
                 hargaSewa: item.hargaSewa,
