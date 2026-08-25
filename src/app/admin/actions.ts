@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signIn, signOut } from "@/auth";
 import { db } from "@/lib/db";
-import { items, categories, settings } from "@/db/schema";
+import { items, categories, settings, customers } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
 
@@ -199,4 +199,25 @@ export async function loginAction(
 
 export async function logoutAction() {
   await signOut({ redirectTo: "/admin/login" });
+}
+
+export async function toggleBlacklistAction(
+  customerId: number,
+  _fd?: FormData,
+): Promise<void> {
+  try {
+    const [c] = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.id, customerId));
+    if (c) {
+      await db
+        .update(customers)
+        .set({ blacklist: !c.blacklist })
+        .where(eq(customers.id, customerId));
+    }
+  } catch (e) {
+    console.error("toggleBlacklistAction:", e);
+  }
+  revalidatePath("/admin/customers");
 }
