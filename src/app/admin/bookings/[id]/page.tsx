@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { formatRupiah } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { updateBookingStatusAction } from "../actions";
+import { updateBookingStatusAction, markDpPaidAction, addPaymentAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -146,9 +146,15 @@ export default async function BookingDetailPage({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">DP (30%)</span>
                 <span className="font-medium">{formatRupiah(b.dpAmount)}</span>
-                <span className={b.dpPaid ? "text-forest-deep" : "text-muted-foreground"}>
-                  {b.dpPaid ? "✓ lunas" : "belum"}
-                </span>
+                {b.dpPaid ? (
+                  <span className="text-forest-deep">✓ lunas</span>
+                ) : (
+                  <form action={markDpPaidAction.bind(null, b.id)}>
+                    <Button type="submit" size="sm" variant="outline" className="h-6 px-2 text-xs">
+                      Tandai lunas
+                    </Button>
+                  </form>
+                )}
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sisa</span>
@@ -186,6 +192,38 @@ export default async function BookingDetailPage({
                 ))}
               </ul>
             )}
+
+            <form action={addPaymentAction} className="mt-4 space-y-2 border-t border-border/60 pt-4">
+              <input type="hidden" name="bookingId" value={b.id} />
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  name="type"
+                  defaultValue="remaining"
+                  className="h-9 rounded-lg border border-input bg-card px-2 text-sm"
+                >
+                  <option value="dp">DP</option>
+                  <option value="remaining">Sisa</option>
+                  <option value="denda">Denda</option>
+                </select>
+                <input
+                  name="amount"
+                  type="number"
+                  min="0"
+                  step="1000"
+                  placeholder="Nominal"
+                  required
+                  className="h-9 rounded-lg border border-input bg-card px-2 text-sm"
+                />
+              </div>
+              <input
+                name="method"
+                placeholder="Metode (TF BCA, tunai, …)"
+                className="h-9 w-full rounded-lg border border-input bg-card px-2 text-sm"
+              />
+              <Button type="submit" size="sm" className="w-full bg-forest hover:bg-forest-deep">
+                Catat Pembayaran
+              </Button>
+            </form>
           </div>
 
           {b.notes && (
