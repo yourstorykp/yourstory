@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { customers, bookings, bookingItems, settings, items } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getItemAvailability, hasConflict } from "@/lib/availability";
 
 export type BookingInput = {
   itemId: number;
@@ -28,6 +29,13 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
   if (!item) throw new Error("Barang tidak ditemukan.");
   if (qty > item.stokTotal) {
     throw new Error(`Stok tersedia hanya ${item.stokTotal} unit.`);
+  }
+
+  const { stokTotal, ranges } = await getItemAvailability(itemId);
+  if (hasConflict(stokTotal, ranges, startDate, endDate, qty)) {
+    throw new Error(
+      "Maaf, stok tidak tersedia pada tanggal yang dipilih. Coba periode lain.",
+    );
   }
 
   const days = Math.max(

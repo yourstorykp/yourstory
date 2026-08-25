@@ -6,6 +6,7 @@ import { items, settings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
+import { getItemAvailability } from "@/lib/availability";
 import { BookingModal } from "@/components/sewa/booking-modal";
 
 export const revalidate = 120;
@@ -42,6 +43,10 @@ export default async function ItemDetailPage({
   const data = await getItem(itemId);
   if (!data) notFound();
   const { item, dpPct } = data;
+
+  const { ranges } = await getItemAvailability(itemId);
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = ranges.filter((r) => r.end >= today);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -94,16 +99,31 @@ export default async function ItemDetailPage({
           </div>
 
           <p className="text-sm text-muted-foreground">{item.description ?? "Belum ada deskripsi."}</p>
+          {upcoming.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Sudah terbooking:{" "}
+              {upcoming.map((r) => `${r.start}–${r.end}`).join(" · ")}
+            </p>
+          )}
 
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="rounded-full bg-muted px-3 py-1">
               Stok tersedia: {item.stokTotal}
             </span>
-            {item.maintenanceDays > 0 && (
-              <span className="rounded-full bg-muted px-3 py-1">
-                Maintenance: {item.maintenanceDays} hri
-              </span>
-            )}
+              {item.maintenanceDays > 0 && (
+                <span className="rounded-full bg-muted px-3 py-1">
+                  Maintenance: {item.maintenanceDays} hri
+                </span>
+              )}
+              {upcoming.length > 0 ? (
+                <span className="rounded-full bg-terracotta/15 px-3 py-1 text-terracotta-deep">
+                  {upcoming.length} periode terbooking
+                </span>
+              ) : (
+                <span className="rounded-full bg-forest/15 px-3 py-1 text-forest-deep">
+                  Tersedia
+                </span>
+              )}
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4">
