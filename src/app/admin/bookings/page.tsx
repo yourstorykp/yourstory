@@ -3,6 +3,7 @@ import { bookings } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { formatRupiah } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const statusLabel: Record<string, string> = {
   booking: "Menunggu",
@@ -70,7 +71,12 @@ export default async function BookingsPage() {
             {rows.map((b) => (
               <tr key={b.id} className="border-b border-border/60 last:border-0">
                 <td className="px-4 py-3 font-medium">
-                  YS-{b.id}-{new Date(b.createdAt).getFullYear()}
+                  <Link
+                    href={`/admin/bookings/${b.id}`}
+                    className="text-forest-deep underline-offset-2 hover:underline"
+                  >
+                    YS-{b.id}-{new Date(b.createdAt).getFullYear()}
+                  </Link>
                 </td>
                 <td className="px-4 py-3">
                   <div>{b.customer?.name ?? "—"}</div>
