@@ -3,7 +3,7 @@ config({ path: ".env.local" });
 
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { users, settings, categories } from "../src/db/schema";
+import { users, settings, categories, consignors, items } from "../src/db/schema";
 
 function errText(e: unknown): string {
   const o = e as any;
@@ -62,6 +62,39 @@ async function main() {
       console.log("Kategori contoh dibuat.");
     }
   }, "create categories");
+
+  await withRetry(async () => {
+    const cEmail = "consignor@yourstory.kp";
+    const existingC = await db.select().from(consignors).where(eq(consignors.email, cEmail));
+    let cid: number;
+    if (existingC.length === 0) {
+      const [c] = await db
+        .insert(consignors)
+        .values({
+          name: "Titipan Demo",
+          email: cEmail,
+          passwordHash: hash,
+          contact: "081999888777",
+        })
+        .returning({ id: consignors.id });
+      cid = c.id;
+      console.log(`Consignor dibuat: ${cEmail} / consignor1234`);
+    } else {
+      cid = existingC[0].id;
+      console.log("Consignor sudah ada, lewati.");
+    }
+    const owned = await db
+      .select()
+      .from(items)
+      .where(eq(items.ownerType, "store"))
+      .limit(1);
+    if (owned.length) {
+      await db
+        .update(items)
+        .set({ ownerType: "consignor", consignorId: cid, profitSharePct: "20" })
+        .where(eq(items.id, owned[0].id));
+    }
+  }, "create consignor");
 
   process.exit(0);
 }
