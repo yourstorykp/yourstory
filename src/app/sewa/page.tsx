@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { items, categories } from "@/db/schema";
 import { eq, ilike, and } from "drizzle-orm";
@@ -6,11 +7,28 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 function satuanLabel(s: string) {
   return s === "hari" ? "hari" : s === "minggu" ? "minggu" : s === "bulan" ? "bulan" : "jam";
 }
+
+const getCatalog = unstable_cache(
+  async (cat?: string, q?: string) => {
+    const cats = await db.select().from(categories).orderBy(categories.name);
+    const rows = await db.query.items.findMany({
+      with: { category: true },
+      where: and(
+        cat ? eq(items.categoryId, Number(cat)) : undefined,
+        q ? ilike(items.name, `%${q}%`) : undefined,
+      ),
+      orderBy: (items, { desc }) => [desc(items.createdAt)],
+    });
+    return { cats, rows };
+  },
+  ["sewa-catalog"],
+  { revalidate: 120, tags: ["catalog", "items"] },
+);
 
 export default async function SewaPage({
   searchParams,
@@ -19,15 +37,7 @@ export default async function SewaPage({
 }) {
   const { cat, q } = await searchParams;
 
-  const cats = await db.select().from(categories).orderBy(categories.name);
-  const rows = await db.query.items.findMany({
-    with: { category: true },
-    where: and(
-      cat ? eq(items.categoryId, Number(cat)) : undefined,
-      q ? ilike(items.name, `%${q}%`) : undefined,
-    ),
-    orderBy: (items, { desc }) => [desc(items.createdAt)],
-  });
+  const { cats, rows } = await getCatalog(cat, q);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

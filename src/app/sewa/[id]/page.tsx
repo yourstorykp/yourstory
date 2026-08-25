@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { items, settings } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -8,11 +9,27 @@ import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
 import { BookingForm } from "@/components/sewa/booking-form";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 function satuanLabel(s: string) {
   return s === "hari" ? "hari" : s === "minggu" ? "minggu" : s === "bulan" ? "bulan" : "jam";
 }
+
+const getItem = unstable_cache(
+  async (itemId: number) => {
+    const [item] = await db.query.items.findMany({
+      with: { category: true, consignor: true },
+      where: eq(items.id, itemId),
+      limit: 1,
+    });
+    if (!item) return null;
+    const s = await db.select().from(settings).limit(1);
+    const dpPct = Number(s[0]?.defaultDpPct ?? 30);
+    return { item, dpPct };
+  },
+  ["sewa-item"],
+  { revalidate: 120, tags: ["items"] },
+);
 
 export default async function ItemDetailPage({
   params,
@@ -23,15 +40,9 @@ export default async function ItemDetailPage({
   const itemId = Number(id);
   if (Number.isNaN(itemId)) notFound();
 
-  const [item] = await db.query.items.findMany({
-    with: { category: true, consignor: true },
-    where: eq(items.id, itemId),
-    limit: 1,
-  });
-  if (!item) notFound();
-
-  const s = await db.select().from(settings).limit(1);
-  const dpPct = Number(s[0]?.defaultDpPct ?? 30);
+  const data = await getItem(itemId);
+  if (!data) notFound();
+  const { item, dpPct } = data;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
