@@ -1,26 +1,147 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Brand outdoor palette */
+  --color-forest: #41543a;
+  --color-forest-deep: #2f3f2b;
+  --color-terracotta: #c0704e;
+  --color-terracotta-deep: #a8553a;
+  --color-wood: #8a6f4e;
+  --color-sand: #ece2cf;
+  --color-cream: #f5efe3;
+  --color-moss: #7c8a5a;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.75rem;
+
+  --background: #f5efe3;
+  --foreground: #2c2a22;
+  --card: #fbf7ee;
+  --card-foreground: #2c2a22;
+  --popover: #fbf7ee;
+  --popover-foreground: #2c2a22;
+
+  --primary: #41543a;
+  --primary-foreground: #f5efe3;
+  --secondary: #ece2cf;
+  --secondary-foreground: #2c2a22;
+  --muted: #ece2cf;
+  --muted-foreground: #6e6655;
+  --accent: #ece2cf;
+  --accent-foreground: #2c2a22;
+
+  --destructive: #a8553a;
+  --border: #ddd2bd;
+  --input: #ddd2bd;
+  --ring: #41543a;
+
+  --chart-1: #41543a;
+  --chart-2: #c0704e;
+  --chart-3: #8a6f4e;
+  --chart-4: #7c8a5a;
+  --chart-5: #b9a87f;
+
+  --sidebar: #efe7d6;
+  --sidebar-foreground: #2c2a22;
+  --sidebar-primary: #41543a;
+  --sidebar-primary-foreground: #f5efe3;
+  --sidebar-accent: #ece2cf;
+  --sidebar-accent-foreground: #2c2a22;
+  --sidebar-border: #ddd2bd;
+  --sidebar-ring: #41543a;
+}
+
+.dark {
+  --background: #1c1b16;
+  --foreground: #f5efe3;
+  --card: #26241d;
+  --card-foreground: #f5efe3;
+  --popover: #26241d;
+  --popover-foreground: #f5efe3;
+  --primary: #7c8a5a;
+  --primary-foreground: #1c1b16;
+  --secondary: #333027;
+  --secondary-foreground: #f5efe3;
+  --muted: #333027;
+  --muted-foreground: #a89c84;
+  --accent: #333027;
+  --accent-foreground: #f5efe3;
+  --destructive: #c0704e;
+  --border: #3d3a30;
+  --input: #3d3a30;
+  --ring: #7c8a5a;
+  --sidebar: #26241d;
+  --sidebar-foreground: #f5efe3;
+  --sidebar-primary: #7c8a5a;
+  --sidebar-primary-foreground: #1c1b16;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01";
+  }
+  html {
+    @apply font-sans;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Signature: subtle topographic contour texture for outdoor feel */
+.topo-bg {
+  background-image: radial-gradient(circle at 1px 1px, rgba(65, 84, 58, 0.06) 1px, transparent 0);
+  background-size: 22px 22px;
 }
