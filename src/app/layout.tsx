@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { PWARegister } from "@/components/pwa-register";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -23,6 +24,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "yourstory.kp — Manajemen Rental",
   description: "Sistem manajemen rental: inventaris, booking, konsinyasi.",
+  manifest: "/manifest.webmanifest",
+  themeColor: "#2f5d44",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -36,6 +43,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <Toaster richColors position="top-center" />
+        <PWARegister />
       </body>
     </html>
   );
