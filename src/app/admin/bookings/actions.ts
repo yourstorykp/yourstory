@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { bookings, payments } from "@/db/schema";
+import { bookings, payments, documents } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
 
@@ -58,6 +58,20 @@ export async function addPaymentAction(formData: FormData): Promise<void> {
     await db.insert(payments).values({ bookingId, type, amount, method, note });
   } catch (e) {
     console.error("addPaymentAction:", e);
+  }
+  revalidatePath("/admin/bookings");
+  revalidatePath(`/admin/bookings/${bookingId}`);
+}
+
+export async function addDocumentAction(formData: FormData): Promise<void> {
+  const bookingId = Number(formData.get("bookingId"));
+  const type = parseText(formData.get("type")) || "ktp";
+  const url = parseText(formData.get("url"));
+  if (!bookingId || !url) return;
+  try {
+    await db.insert(documents).values({ bookingId, type, url });
+  } catch (e) {
+    console.error("addDocumentAction:", e);
   }
   revalidatePath("/admin/bookings");
   revalidatePath(`/admin/bookings/${bookingId}`);
