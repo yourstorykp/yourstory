@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
-import { useSearchParams } from "next/navigation";
-import { loginAction } from "@/app/admin/actions";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,9 +10,31 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Logo } from "@/components/brand/logo";
 
 export function LoginForm({ role }: { role: "admin" | "consignor" }) {
-  const [state, formAction] = useActionState(loginAction, {});
+  const router = useRouter();
   const sp = useSearchParams();
-  const next = sp.get("next") ?? "";
+  const next = sp.get("next") || (role === "consignor" ? "/consignor" : "/admin");
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+    setPending(true);
+    const fd = new FormData(e.currentTarget);
+    const res = await signIn("credentials", {
+      email: fd.get("email") as string,
+      password: fd.get("password") as string,
+      role,
+      redirect: false,
+    });
+    setPending(false);
+    if (res?.error) {
+      setError("Email atau password salah.");
+      return;
+    }
+    router.push(next);
+    router.refresh();
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 topo-bg">
@@ -29,22 +51,35 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction} className="space-y-4">
-            <input type="hidden" name="role" value={role} />
-            <input type="hidden" name="next" value={next} />
+          <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required placeholder="admin@yourstory.kp" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="admin@yourstory.kp"
+                defaultValue="admin@yourstory.kp"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required placeholder="••••••••" />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+              />
             </div>
-            {state.error && (
-              <p className="text-sm text-destructive">{state.error}</p>
-            )}
-            <Button type="submit" className="w-full bg-forest hover:bg-forest-deep">
-              Masuk
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button
+              type="submit"
+              className="w-full bg-forest hover:bg-forest-deep"
+              disabled={pending}
+            >
+              {pending ? "Memproses…" : "Masuk"}
             </Button>
             {role === "admin" ? (
               <p className="text-center text-xs text-muted-foreground">

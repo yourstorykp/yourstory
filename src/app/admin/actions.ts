@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { signIn, signOut } from "@/auth";
+import { signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { items, categories, settings, customers } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -174,27 +174,6 @@ export async function updateSettingsAction(
   revalidatePath("/admin/settings");
   revalidatePath("/admin");
   return { success: true };
-}
-
-export async function loginAction(
-  _prev: ActionState,
-  formData: FormData
-): Promise<ActionState> {
-  const email = parseText(formData.get("email"));
-  const password = parseText(formData.get("password"));
-  const role = parseText(formData.get("role")) || "admin";
-  if (!email || !password) return { error: "Email dan password wajib diisi." };
-
-  const res = await signIn("credentials", {
-    email,
-    password,
-    role,
-    redirect: false,
-  });
-  if (res?.error) return { error: "Email atau password salah." };
-
-  const next = parseText(formData.get("next")) || (role === "consignor" ? "/consignor" : "/admin");
-  redirect(next);
 }
 
 export async function logoutAction() {
