@@ -14,7 +14,7 @@ const links = [
   { href: "/admin/settings", label: "Pengaturan" },
 ];
 
-export function AdminNav() {
+export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-1">
@@ -25,6 +25,7 @@ export function AdminNav() {
           <Link
             key={l.href}
             href={l.href}
+            onClick={onNavigate}
             className={cn(
               "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active

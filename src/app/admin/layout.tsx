@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminMobileNav } from "@/components/admin/mobile-nav";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
@@ -25,9 +26,12 @@ export default async function AdminLayout({
     <div className="topo-bg flex min-h-screen flex-col">
       <header className="border-b border-border bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link href="/admin">
-            <Logo />
-          </Link>
+          <div className="flex items-center gap-2">
+            <AdminMobileNav storeName={storeName} />
+            <Link href="/admin">
+              <Logo />
+            </Link>
+          </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-muted-foreground">{storeName}</span>
             <LogoutButton />
