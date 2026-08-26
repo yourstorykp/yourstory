@@ -21,11 +21,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: "#2f5d44",
+};
+
 export const metadata: Metadata = {
   title: "yourstory.kp — Manajemen Rental",
   description: "Sistem manajemen rental: inventaris, booking, konsinyasi.",
   manifest: "/manifest.webmanifest",
-  themeColor: "#2f5d44",
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
