@@ -80,11 +80,16 @@ export default async function BookingsPage() {
               <tr key={b.id} className="border-b border-border/60 last:border-0">
                 <td className="px-4 py-3 font-medium">
                   <Link
-                    href={`/admin/bookings/${b.id}`}
+                    href={`/admin/bookings/${b.id}/alur`}
                     className="text-forest-deep underline-offset-2 hover:underline"
                   >
                     YS-{b.id}-{new Date(b.createdAt).getFullYear()}
                   </Link>
+                  <div className="text-xs text-muted-foreground">
+                    <Link href={`/admin/bookings/${b.id}`} className="hover:underline">
+                      detail
+                    </Link>
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <div>{b.customer?.name ?? "—"}</div>

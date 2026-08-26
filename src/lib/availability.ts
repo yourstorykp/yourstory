@@ -31,7 +31,11 @@ export async function getItemAvailability(itemId: number): Promise<{
   });
 
   const ranges: BookedRange[] = bis
-    .filter((bi) => bi.booking && bi.booking.status !== "cancelled")
+    .filter(
+      (bi) =>
+        bi.booking &&
+        ["active", "returned", "late"].includes(bi.booking.status),
+    )
     .map((bi) => ({
       start: bi.booking!.startDate,
       end: addDays(bi.booking!.endDate, bi.maintenanceDays),
