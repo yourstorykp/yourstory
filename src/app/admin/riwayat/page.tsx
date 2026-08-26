@@ -1,21 +1,18 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
-import { desc } from "drizzle-orm";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { desc, eq } from "drizzle-orm";
 import { BookingsList } from "@/components/admin/bookings-list";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookingsPage() {
+export default async function RiwayatPage() {
   const rows = await db.query.bookings.findMany({
     with: { customer: true, items: { with: { item: true } } },
-    orderBy: [desc(bookings.createdAt)],
+    where: eq(bookings.status, "completed"),
+    orderBy: [desc(bookings.endDate)],
   });
 
-  const data = rows
-    .filter((b) => b.status !== "completed")
-    .map((b) => ({
+  const data = rows.map((b) => ({
     code: `YS-${b.id}-${new Date(b.createdAt).getFullYear()}`,
     id: b.id,
     status: b.status,
@@ -30,18 +27,11 @@ export default async function BookingsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold">Booking Masuk</h1>
-          <p className="text-sm text-muted-foreground">
-            Pesanan dari pelanggan melalui katalog sewa.
-          </p>
-        </div>
-        <Link href="/admin/bookings/new">
-          <Button className="bg-forest hover:bg-forest-deep">
-            + Booking Baru
-          </Button>
-        </Link>
+      <div>
+        <h1 className="font-heading text-2xl font-semibold">Riwayat Penyewaan</h1>
+        <p className="text-sm text-muted-foreground">
+          Pesanan yang sudah selesai.
+        </p>
       </div>
 
       <BookingsList rows={data} />
