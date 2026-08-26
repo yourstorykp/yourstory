@@ -166,3 +166,27 @@ export const bookingItemsRelations = relations(bookingItems, ({ one }) => ({
     references: [items.id],
   }),
 }));
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  booking: one(bookings, {
+    fields: [payments.bookingId],
+    references: [bookings.id],
+  }),
+}));
+
+export const documentsRelations = relations(documents, ({ one }) => ({
+  booking: one(bookings, {
+    fields: [documents.bookingId],
+    references: [bookings.id],
+  }),
+}));
+
+export const bookingStatusLogRelations = relations(
+  bookingStatusLog,
+  ({ one }) => ({
+    booking: one(bookings, {
+      fields: [bookingStatusLog.bookingId],
+      references: [bookings.id],
+    }),
+  }),
+);
