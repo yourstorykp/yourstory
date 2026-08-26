@@ -1,6 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 
 export const authConfig = {
   trustHost: true,
@@ -18,10 +17,11 @@ export const authConfig = {
         const role = (creds?.role as string | undefined) || "admin";
         if (!email || !password) return null;
 
-        // Dynamic import agar middleware (Edge) tidak membundle driver pg
+        // Dynamic import agar middleware (Edge) tidak membundle driver pg dan library crypto/Node
         const { db } = await import("@/lib/db");
         const { users, consignors } = await import("@/db/schema");
         const { eq } = await import("drizzle-orm");
+        const bcrypt = (await import("bcryptjs")).default;
 
         if (role === "consignor") {
           const [c] = await db
