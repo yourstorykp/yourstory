@@ -18,6 +18,72 @@ type ItemOption = {
 
 type CustOption = { id: number; name: string; contact: string | null };
 
+const field = "h-9 w-full rounded-lg border border-input bg-card px-2 text-sm";
+
+function ItemCombobox({
+  items,
+  value,
+  onChange,
+}: {
+  items: ItemOption[];
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  const selected = items.find((i) => String(i.id) === value);
+  const [q, setQ] = useState(selected?.name ?? "");
+  const [open, setOpen] = useState(false);
+  const filtered = q
+    ? items.filter((i) => i.name.toLowerCase().includes(q.toLowerCase()))
+    : items;
+
+  return (
+    <div className="relative min-w-0 flex-1">
+      <input
+        value={q}
+        placeholder="Ketik nama barang…"
+        className={field}
+        onChange={(e) => {
+          setQ(e.target.value);
+          setOpen(true);
+          if (!items.some((i) => i.name === e.target.value)) onChange("");
+        }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+      />
+      {open && (
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-card py-1 shadow-lg">
+          {filtered.length === 0 ? (
+            <li className="px-3 py-2 text-xs text-muted-foreground">
+              Tidak ada barang cocok
+            </li>
+          ) : (
+            filtered.map((it) => (
+              <li key={it.id}>
+                <button
+                  type="button"
+                  className="block w-full px-3 py-2 text-left text-sm hover:bg-secondary"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    setQ(it.name);
+                    onChange(String(it.id));
+                    setOpen(false);
+                  }}
+                >
+                  {it.name}{" "}
+                  <span className="text-muted-foreground">
+                    — {formatRupiah(it.hargaSewa)}/{it.satuanSewa} (stok{" "}
+                    {it.stokTotal})
+                  </span>
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function NewBookingForm({
   items,
   customers,
@@ -30,21 +96,26 @@ export function NewBookingForm({
     FormData
   >(adminCreateBookingAction, {});
   const [mode, setMode] = useState<"existing" | "new">("existing");
-  const [rows, setRows] = useState<{ itemId: string; qty: string }[]>([
-    { itemId: items[0]?.id ? String(items[0].id) : "", qty: "1" },
+  const [rows, setRows] = useState<{ id: string; itemId: string; qty: string }[]>([
+    {
+      id: crypto.randomUUID(),
+      itemId: items[0]?.id ? String(items[0].id) : "",
+      qty: "1",
+    },
   ]);
 
   const addRow = () =>
     setRows([
       ...rows,
-      { itemId: items[0]?.id ? String(items[0].id) : "", qty: "1" },
+      {
+        id: crypto.randomUUID(),
+        itemId: items[0]?.id ? String(items[0].id) : "",
+        qty: "1",
+      },
     ]);
   const removeRow = (i: number) => setRows(rows.filter((_, idx) => idx !== i));
   const setRow = (i: number, key: "itemId" | "qty", val: string) =>
     setRows(rows.map((r, idx) => (idx === i ? { ...r, [key]: val } : r)));
-
-  const field =
-    "h-9 w-full rounded-lg border border-input bg-card px-2 text-sm";
 
   return (
     <form
@@ -117,30 +188,20 @@ export function NewBookingForm({
       <div className="space-y-2">
         <div className="text-sm font-medium">Barang</div>
         {rows.map((r, i) => (
-          <div key={i} className="flex gap-2">
-            <select
-              name="itemId"
+          <div key={r.id} className="flex gap-2">
+            <ItemCombobox
+              items={items}
               value={r.itemId}
-              onChange={(e) => setRow(i, "itemId", e.target.value)}
-              className={"flex-1 " + field}
-            >
-              <option value="" disabled>
-                Pilih barang…
-              </option>
-              {items.map((it) => (
-                <option key={it.id} value={it.id}>
-                  {it.name} — {formatRupiah(it.hargaSewa)}/{it.satuanSewa} (stok{" "}
-                  {it.stokTotal})
-                </option>
-              ))}
-            </select>
+              onChange={(id) => setRow(i, "itemId", id)}
+            />
+            <input type="hidden" name="itemId" value={r.itemId} />
             <input
               name="qty"
               type="number"
               min={1}
               value={r.qty}
               onChange={(e) => setRow(i, "qty", e.target.value)}
-              className={"w-20 " + field}
+              className={"w-16 " + field}
             />
             {rows.length > 1 && (
               <Button
