@@ -3,6 +3,7 @@ import { bookings } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { formatRupiah } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const statusLabel: Record<string, string> = {
@@ -40,11 +41,18 @@ export default async function BookingsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold">Booking Masuk</h1>
-        <p className="text-sm text-muted-foreground">
-          Pesanan dari pelanggan melalui katalog sewa.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold">Booking Masuk</h1>
+          <p className="text-sm text-muted-foreground">
+            Pesanan dari pelanggan melalui katalog sewa.
+          </p>
+        </div>
+        <Link href="/admin/bookings/new">
+          <Button className="bg-forest hover:bg-forest-deep">
+            + Booking Baru
+          </Button>
+        </Link>
       </div>
 
       <div className="rounded-xl border border-border bg-card">
