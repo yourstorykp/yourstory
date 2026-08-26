@@ -1,5 +1,12 @@
 import { db } from "@/lib/db";
-import { customers, bookings, bookingItems, settings, items } from "@/db/schema";
+import {
+  customers,
+  bookings,
+  bookingItems,
+  settings,
+  items,
+  bookingStatusLog,
+} from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getItemAvailability, hasConflict } from "@/lib/availability";
 
@@ -81,6 +88,10 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
       notes,
     })
     .returning({ id: bookings.id });
+
+  await db
+    .insert(bookingStatusLog)
+    .values({ bookingId: b.id, status: "booking" });
 
   await db.insert(bookingItems).values({
     bookingId: b.id,

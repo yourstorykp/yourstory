@@ -10,6 +10,7 @@ import {
   items,
   bookingItems,
   settings,
+  bookingStatusLog,
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
@@ -36,6 +37,7 @@ export async function updateBookingStatusAction(
       .update(bookings)
       .set({ status })
       .where(eq(bookings.id, bookingId));
+    await db.insert(bookingStatusLog).values({ bookingId, status });
   } catch (e) {
     console.error("updateBookingStatusAction:", e);
   }
@@ -173,6 +175,10 @@ export async function adminCreateBookingAction(
       notes,
     })
     .returning({ id: bookings.id });
+
+  await db
+    .insert(bookingStatusLog)
+    .values({ bookingId: b.id, status: "booking" });
 
   await db.insert(bookingItems).values(
     lines.map((l) => ({

@@ -88,11 +88,18 @@ export default async function BookingDetailPage({
             </span>
           </div>
         </div>
-        <Link href={`/admin/bookings/${b.id}/invoice`}>
-          <Button variant="outline" size="sm">
-            Cetak Invoice
-          </Button>
-        </Link>
+        <div className="flex gap-2 print:hidden">
+          <Link href={`/admin/bookings/${b.id}/alur`}>
+            <Button variant="outline" size="sm">
+              Lihat Alur
+            </Button>
+          </Link>
+          <Link href={`/admin/bookings/${b.id}/invoice`}>
+            <Button variant="outline" size="sm">
+              Cetak Invoice
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Status actions */}

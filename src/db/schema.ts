@@ -117,6 +117,14 @@ export const documents = pgTable("documents", {
   url: text("url").notNull(),
 });
 
+export const bookingStatusLog = pgTable("booking_status_log", {
+  id: serial("id").primaryKey(),
+  bookingId: integer("booking_id").references(() => bookings.id),
+  status: text("status").notNull(),
+  note: text("note"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const itemsRelations = relations(items, ({ one, many }) => ({
   category: one(categories, {
@@ -145,6 +153,7 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
   items: many(bookingItems),
   payments: many(payments),
   documents: many(documents),
+  statusLog: many(bookingStatusLog),
 }));
 
 export const bookingItemsRelations = relations(bookingItems, ({ one }) => ({
