@@ -93,6 +93,11 @@ export default async function BookingDetailPage({
             </span>
           </div>
         </div>
+        <Link href={`/admin/bookings/${b.id}/invoice`}>
+          <Button variant="outline" size="sm">
+            Cetak Invoice
+          </Button>
+        </Link>
       </div>
 
       {/* Status actions */}

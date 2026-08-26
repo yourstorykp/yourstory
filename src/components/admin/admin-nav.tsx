@@ -8,6 +8,7 @@ const links = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/items", label: "Inventaris" },
   { href: "/admin/bookings", label: "Booking" },
+  { href: "/admin/laporan", label: "Laporan" },
   { href: "/admin/customers", label: "Pelanggan" },
   { href: "/admin/categories", label: "Kategori" },
   { href: "/admin/settings", label: "Pengaturan" },
