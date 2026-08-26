@@ -6,7 +6,7 @@ import { formatRupiah } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // Cache halaman selama 60 detik
 
 export default async function AdminDashboard() {
   const [itemCount, catCount, consCount, s, revAgg, piuAgg, activeC, lateC, recent] =
