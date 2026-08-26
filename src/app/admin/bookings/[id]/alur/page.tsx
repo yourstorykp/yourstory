@@ -109,8 +109,8 @@ export default async function AlurPage({
       )}
 
       {/* Stepper */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <ol className="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <div className="rounded-xl border border-border bg-card p-4">
+        <ol className="flex items-start">
           {FLOW.map((step, i) => {
             const state =
               isCancelled || currentIdx < 0
@@ -121,41 +121,42 @@ export default async function AlurPage({
                     ? "current"
                     : "upcoming";
             return (
-              <li key={step.key} className="flex flex-1 items-center gap-3">
-                <div className="flex flex-col items-center">
+              <li
+                key={step.key}
+                className="flex min-w-0 flex-1 flex-col items-center"
+              >
+                <div className="flex w-full items-center">
                   <span
                     className={
-                      "flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold " +
+                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold " +
                       (state === "done"
                         ? "bg-forest text-cream"
                         : state === "current"
-                          ? "bg-terracotta text-white ring-4 ring-terracotta/20"
+                          ? "bg-terracotta text-white ring-2 ring-terracotta/20"
                           : "bg-secondary text-muted-foreground")
                     }
                   >
                     {state === "done" ? "✓" : i + 1}
                   </span>
+                  {i < FLOW.length - 1 && (
+                    <span
+                      className={
+                        "mx-1 h-0.5 flex-1 " +
+                        (i < currentIdx ? "bg-forest" : "bg-border")
+                      }
+                    />
+                  )}
                 </div>
-                <div className="flex-1">
-                  <div
-                    className={
-                      "text-sm font-medium " +
-                      (state === "upcoming"
-                        ? "text-muted-foreground"
-                        : "text-foreground")
-                    }
-                  >
-                    {step.label}
-                  </div>
-                </div>
-                {i < FLOW.length - 1 && (
-                  <span
-                    className={
-                      "hidden h-0.5 flex-1 sm:block " +
-                      (i < currentIdx ? "bg-forest" : "bg-border")
-                    }
-                  />
-                )}
+                <span
+                  className={
+                    "mt-1 text-center text-[10px] leading-tight " +
+                    (state === "upcoming"
+                      ? "text-muted-foreground"
+                      : "font-medium text-foreground")
+                  }
+                >
+                  {step.label}
+                </span>
               </li>
             );
           })}
@@ -163,25 +164,12 @@ export default async function AlurPage({
       </div>
 
       {/* Actions */}
-      {!isCancelled && b.status !== "completed" && (
-        <div className="flex flex-wrap gap-2">
-          {next && (
-            <form action={updateBookingStatusAction.bind(null, b.id, next.key)}>
-              <Button className="bg-forest hover:bg-forest-deep">
-                Lanjutkan ke {next.label} →
-              </Button>
-            </form>
-          )}
-          {canCancel && (
-            <form
-              action={updateBookingStatusAction.bind(null, b.id, "cancelled")}
-            >
-              <Button variant="outline" className="text-destructive">
-                Batalkan Pesanan
-              </Button>
-            </form>
-          )}
-        </div>
+      {!isCancelled && b.status !== "completed" && next && (
+        <form action={updateBookingStatusAction.bind(null, b.id, next.key)}>
+          <Button type="submit" className="bg-forest hover:bg-forest-deep">
+            Lanjutkan ke {next.label} →
+          </Button>
+        </form>
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -266,6 +254,17 @@ export default async function AlurPage({
           </ol>
         )}
       </div>
+      {canCancel && (
+        <form action={updateBookingStatusAction.bind(null, b.id, "cancelled")}>
+          <Button
+            type="submit"
+            variant="outline"
+            className="w-full text-destructive"
+          >
+            Batalkan Pesanan
+          </Button>
+        </form>
+      )}
     </div>
   );
 }
