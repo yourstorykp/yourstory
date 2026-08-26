@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggal, formatTanggalWaktu } from "@/lib/format";
 import { updateBookingStatusAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -28,8 +28,7 @@ const statusLabel: Record<string, string> = {
 };
 
 function fmtDateTime(v: string | Date): string {
-  const d = typeof v === "string" ? new Date(v) : v;
-  return d.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
+  return formatTanggalWaktu(v);
 }
 
 export default async function AlurPage({
@@ -87,7 +86,7 @@ export default async function AlurPage({
             Alur Penyewaan · YS-{b.id}-{new Date(b.createdAt).getFullYear()}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {b.customer?.name ?? "—"} · {b.startDate} s.d. {b.endDate}
+            {b.customer?.name ?? "—"} · {formatTanggal(b.startDate)} s.d. {formatTanggal(b.endDate)}
           </p>
         </div>
         <Link href={`/admin/bookings/${b.id}/invoice`}>

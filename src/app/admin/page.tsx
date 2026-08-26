@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { items, categories, consignors, settings, bookings } from "@/db/schema";
 import { count, sql, eq, notInArray, desc } from "drizzle-orm";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggal } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -98,7 +98,7 @@ export default async function AdminDashboard() {
                   YS-{b.id}-{new Date(b.createdAt).getFullYear()}
                 </Link>
                 <div className="text-xs text-muted-foreground">
-                  {b.customer?.name ?? "?"} · {b.startDate} s.d. {b.endDate}
+                   {b.customer?.name ?? "?"} · {formatTanggal(b.startDate)} s.d. {formatTanggal(b.endDate)}
                 </div>
               </div>
               <div className="flex items-center gap-2">

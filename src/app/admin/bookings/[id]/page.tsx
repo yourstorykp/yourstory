@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/db";
 import { bookings, payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggal } from "@/lib/format";
 import { getItemAvailability } from "@/lib/availability";
 import { updateBookingStatusAction, markDpPaidAction, addPaymentAction } from "../actions";
 
@@ -84,7 +84,7 @@ export default async function BookingDetailPage({
           <div className="mt-1 flex items-center gap-2">
             <StatusBadge status={b.status} />
             <span className="text-sm text-muted-foreground">
-              {b.startDate} s.d. {b.endDate}
+              {formatTanggal(b.startDate)} s.d. {formatTanggal(b.endDate)}
             </span>
           </div>
         </div>

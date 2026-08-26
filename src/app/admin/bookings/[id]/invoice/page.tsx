@@ -5,7 +5,7 @@ import { PrintButton } from "@/components/admin/print-button";
 import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggal } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -89,7 +89,7 @@ export default async function InvoicePage({
               No: YS-{b.id}-{new Date(b.createdAt).getFullYear()}
             </div>
             <div className="text-muted-foreground">
-              {new Date().toLocaleDateString("id-ID")}
+              {formatTanggal(new Date())}
             </div>
           </div>
         </header>
@@ -106,7 +106,7 @@ export default async function InvoicePage({
           <div className="text-right">
             <div className="text-muted-foreground">Periode Sewa</div>
             <div className="font-medium">
-              {b.startDate} s.d. {b.endDate}
+              {formatTanggal(b.startDate)} s.d. {formatTanggal(b.endDate)}
             </div>
             <div>
               {days} hari · Status: {statusLabel[b.status] ?? b.status}

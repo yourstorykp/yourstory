@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { items, bookingItems, bookings } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggal } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
@@ -105,7 +105,7 @@ export default async function ConsignorDashboard() {
               <div>
                 <div className="font-medium">{bi.item?.name ?? "?"}</div>
                 <div className="text-xs text-muted-foreground">
-                  {bi.booking?.startDate} s.d. {bi.booking?.endDate}
+                   {formatTanggal(bi.booking?.startDate)} s.d. {formatTanggal(bi.booking?.endDate)}
                 </div>
               </div>
               <div className="flex items-center gap-2">

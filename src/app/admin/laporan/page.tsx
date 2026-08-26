@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
 import { desc } from "drizzle-orm";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggal } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -170,7 +170,7 @@ export default async function LaporanPage({
                     </td>
                     <td className="px-3 py-2">{b.customer?.name ?? "—"}</td>
                     <td className="px-3 py-2 text-muted-foreground">
-                      {b.startDate} → {b.endDate}
+                       {formatTanggal(b.startDate)} → {formatTanggal(b.endDate)}
                     </td>
                     <td className="px-3 py-2">
                       {statusLabel[b.status] ?? b.status}
