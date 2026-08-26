@@ -1,8 +1,9 @@
-import { auth } from "@/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export default auth((req: any) => {
+export default NextAuth(authConfig).auth((req: any) => {
   const path = req.nextUrl.pathname;
   const role = (req.auth?.user as { role?: string } | undefined)?.role;
 
