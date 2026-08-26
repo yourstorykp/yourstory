@@ -34,7 +34,6 @@ export async function GET(req: NextRequest) {
     "DP_Lunas",
     "Dibayar",
     "Sisa",
-    "Deposit",
   ];
   const lines = [header.map(csvCell).join(",")];
 
@@ -45,11 +44,6 @@ export async function GET(req: NextRequest) {
       0,
     );
     const sisa = Math.max(0, total - paid);
-    const deposit = b.depositReceived
-      ? b.depositReturned
-        ? "dikembalikan"
-        : "ditahan"
-      : "belum";
     const row = [
       `YS-${b.id}-${new Date(b.createdAt).getFullYear()}`,
       b.customer?.name ?? "",
@@ -62,7 +56,6 @@ export async function GET(req: NextRequest) {
       b.dpPaid ? "ya" : "tidak",
       String(paid),
       String(sisa),
-      deposit,
     ];
     lines.push(row.map(csvCell).join(","));
   }

@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/db";
-import { bookings, payments, documents } from "@/db/schema";
+import { bookings, payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { formatRupiah } from "@/lib/format";
 import { getItemAvailability } from "@/lib/availability";
-import { updateBookingStatusAction, markDpPaidAction, addPaymentAction, addDocumentAction } from "../actions";
+import { updateBookingStatusAction, markDpPaidAction, addPaymentAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -65,11 +65,6 @@ export default async function BookingDetailPage({
     .select()
     .from(payments)
     .where(eq(payments.bookingId, bookingId));
-
-  const docs = await db
-    .select()
-    .from(documents)
-    .where(eq(documents.bookingId, bookingId));
 
   const totalPaid = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
 
@@ -171,13 +166,6 @@ export default async function BookingDetailPage({
                 <span className="text-muted-foreground">Sisa</span>
                 <span className="font-medium">{formatRupiah(b.remaining)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Deposit</span>
-                <span>
-                  {b.depositReceived ? "✓ diterima" : "belum"} /{" "}
-                  {b.depositReturned ? "✓ dikembalikan" : "ditahan"}
-                </span>
-              </div>
               <div className="flex justify-between border-t border-border/60 pt-1">
                 <span className="text-muted-foreground">Total dibayar</span>
                 <span className="font-medium">{formatRupiah(String(totalPaid))}</span>
@@ -233,51 +221,6 @@ export default async function BookingDetailPage({
               />
               <Button type="submit" size="sm" className="w-full bg-forest hover:bg-forest-deep">
                 Catat Pembayaran
-              </Button>
-            </form>
-          </div>
-
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="mb-2 font-heading text-lg font-semibold">Dokumen</h2>
-            {docs.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Belum ada dokumen.</p>
-            ) : (
-              <ul className="space-y-1 text-sm">
-                {docs.map((d) => (
-                  <li key={d.id}>
-                    <a
-                      href={d.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-forest-deep underline-offset-2 hover:underline"
-                    >
-                      {d.type} ↗
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <form action={addDocumentAction} className="mt-4 space-y-2 border-t border-border/60 pt-4">
-              <input type="hidden" name="bookingId" value={b.id} />
-              <div className="grid grid-cols-2 gap-2">
-                <select
-                  name="type"
-                  defaultValue="ktp"
-                  className="h-9 rounded-lg border border-input bg-card px-2 text-sm"
-                >
-                  <option value="ktp">KTP</option>
-                  <option value="selfie">Selfie</option>
-                  <option value="other">Lainnya</option>
-                </select>
-                <input
-                  name="url"
-                  placeholder="URL dokumen"
-                  required
-                  className="h-9 rounded-lg border border-input bg-card px-2 text-sm"
-                />
-              </div>
-              <Button type="submit" size="sm" className="w-full bg-forest hover:bg-forest-deep">
-                Tambah Dokumen
               </Button>
             </form>
           </div>

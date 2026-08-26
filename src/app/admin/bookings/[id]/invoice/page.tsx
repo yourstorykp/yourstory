@@ -58,12 +58,6 @@ export default async function InvoicePage({
         86400000,
     ) + 1,
   );
-  const deposit =
-    b.depositReceived
-      ? b.depositReturned
-        ? "dikembalikan"
-        : "ditahan"
-      : "belum diterima";
 
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-6">
@@ -150,7 +144,6 @@ export default async function InvoicePage({
             />
             <Row label="Sisa Tagihan" value={formatRupiah(sisa)} />
             <Row label="Total Dibayar" value={formatRupiah(totalPaid)} />
-            <Row label="Deposit" value={deposit} />
           </div>
         </div>
 
