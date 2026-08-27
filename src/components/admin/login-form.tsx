@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
+import { loginWithCredentials } from "@/app/login/actions";
 
 export function LoginForm({ role }: { role: "admin" | "consignor" }) {
-  const router = useRouter();
   const sp = useSearchParams();
-  const next = sp.get("next") || (role === "consignor" ? "/consignor" : "/admin");
+  const next = sp.get("next") || "";
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -23,22 +21,11 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
     setError("");
     setPending(true);
     const fd = new FormData(e.currentTarget);
-    const res = (await signIn(
-      "credentials",
-      {
-        email: fd.get("email") as string,
-        password: fd.get("password") as string,
-        role,
-      },
-      { redirect: false },
-    )) as { error?: string | null; ok?: boolean } | undefined;
+    fd.set("role", role);
+    if (next) fd.set("next", next);
+    const res = await loginWithCredentials(fd);
     setPending(false);
-    if (res?.error) {
-      setError("Email atau password salah.");
-      return;
-    }
-    router.push(next);
-    router.refresh();
+    if (res?.error) setError(res.error);
   }
 
   return (
@@ -97,16 +84,16 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
         {isAdmin ? (
           <>
             Pemilik titipan?{" "}
-            <Link href="/login/consignor" className="font-medium text-terracotta hover:underline">
+            <a href="/login/consignor" className="font-medium text-terracotta hover:underline">
               Masuk di sini
-            </Link>
+            </a>
           </>
         ) : (
           <>
             Admin?{" "}
-            <Link href="/login/admin" className="font-medium text-terracotta hover:underline">
+            <a href="/login/admin" className="font-medium text-terracotta hover:underline">
               Masuk di sini
-            </Link>
+            </a>
           </>
         )}
       </p>
