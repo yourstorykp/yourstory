@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,14 @@ import { Logo } from "@/components/brand/logo";
 import { loginWithCredentials } from "@/app/login/actions";
 
 export function LoginForm({ role }: { role: "admin" | "consignor" }) {
+  const router = useRouter();
   const sp = useSearchParams();
   const next = sp.get("next") || "";
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
   const isAdmin = role === "admin";
+  const redirectTo = next || (isAdmin ? "/admin" : "/consignor");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,7 +27,12 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
     if (next) fd.set("next", next);
     const res = await loginWithCredentials(fd);
     setPending(false);
-    if (res?.error) setError(res.error);
+    if (res && !res.ok) {
+      setError(res.error || "Gagal login.");
+      return;
+    }
+    router.push(redirectTo);
+    router.refresh();
   }
 
   return (
