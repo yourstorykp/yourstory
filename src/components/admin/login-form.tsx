@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -8,13 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/brand/logo";
 
-export function LoginForm({
-  role,
-  onRoleChange,
-}: {
-  role: "admin" | "consignor";
-  onRoleChange?: (r: "admin" | "consignor") => void;
-}) {
+export function LoginForm({ role }: { role: "admin" | "consignor" }) {
   const router = useRouter();
   const sp = useSearchParams();
   const next = sp.get("next") || (role === "consignor" ? "/consignor" : "/admin");
@@ -44,9 +39,9 @@ export function LoginForm({
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-border bg-card/95 p-8 shadow-xl backdrop-blur">
-      <div className="mb-6 flex flex-col items-center text-center">
-        <Logo className="mb-3" />
+    <div className="w-full max-w-md rounded-2xl border border-border bg-card/95 p-9 shadow-xl backdrop-blur">
+      <div className="mb-7 flex flex-col items-center text-center">
+        <Logo className="mb-4" />
         <h1 className="font-heading text-2xl font-semibold text-forest-deep">
           Masuk ke yourstory.kp
         </h1>
@@ -56,33 +51,6 @@ export function LoginForm({
             : "Pantau barang titipan & bagi hasil"}
         </p>
       </div>
-
-      {onRoleChange && (
-        <div className="mb-6 grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
-          <button
-            type="button"
-            onClick={() => onRoleChange("admin")}
-            className={`rounded-full py-2 text-sm font-medium transition ${
-              isAdmin
-                ? "bg-forest text-cream shadow-sm"
-                : "text-foreground hover:text-forest-deep"
-            }`}
-          >
-            Admin
-          </button>
-          <button
-            type="button"
-            onClick={() => onRoleChange("consignor")}
-            className={`rounded-full py-2 text-sm font-medium transition ${
-              !isAdmin
-                ? "bg-terracotta text-cream shadow-sm"
-                : "text-foreground hover:text-terracotta-deep"
-            }`}
-          >
-            Pemilik Titipan
-          </button>
-        </div>
-      )}
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -122,8 +90,22 @@ export function LoginForm({
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-xs text-muted-foreground">
-        Demo: {isAdmin ? "admin@yourstory.kp / admin1234" : "consignor@yourstory.kp / consignor1234"}
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        {isAdmin ? (
+          <>
+            Pemilik titipan?{" "}
+            <Link href="/consignor/login" className="font-medium text-terracotta hover:underline">
+              Masuk di sini
+            </Link>
+          </>
+        ) : (
+          <>
+            Admin?{" "}
+            <Link href="/admin/login" className="font-medium text-terracotta hover:underline">
+              Masuk di sini
+            </Link>
+          </>
+        )}
       </p>
     </div>
   );
