@@ -40,7 +40,8 @@ async function main() {
       await db.insert(users).values({ name: "Admin yourstory.kp", email, passwordHash: hash });
       console.log(`Admin dibuat: ${email} / ${password}`);
     } else {
-      console.log("Admin sudah ada, lewati.");
+      await db.update(users).set({ passwordHash: hash }).where(eq(users.id, existing[0].id));
+      console.log("Admin sudah ada, password diperbarui.");
     }
   }, "create admin");
 
@@ -65,6 +66,8 @@ async function main() {
 
   await withRetry(async () => {
     const cEmail = "consignor@yourstory.kp";
+    const consignorPassword = process.env.SEED_CONSIGNOR_PASSWORD || "consignor1234";
+    const consignorHash = await bcrypt.hash(consignorPassword, 10);
     const existingC = await db.select().from(consignors).where(eq(consignors.email, cEmail));
     let cid: number;
     if (existingC.length === 0) {
@@ -73,15 +76,16 @@ async function main() {
         .values({
           name: "Titipan Demo",
           email: cEmail,
-          passwordHash: hash,
+          passwordHash: consignorHash,
           contact: "081999888777",
         })
         .returning({ id: consignors.id });
       cid = c.id;
-      console.log(`Consignor dibuat: ${cEmail} / consignor1234`);
+      console.log(`Consignor dibuat: ${cEmail} / ${consignorPassword}`);
     } else {
       cid = existingC[0].id;
-      console.log("Consignor sudah ada, lewati.");
+      await db.update(consignors).set({ passwordHash: consignorHash }).where(eq(consignors.id, cid));
+      console.log("Consignor sudah ada, password diperbarui.");
     }
     const owned = await db
       .select()
