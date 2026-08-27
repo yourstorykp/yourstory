@@ -118,16 +118,10 @@ export function BookingsList({ rows }: { rows: BookingRow[] }) {
                 </div>
                 <div className="flex gap-2 pt-1">
                   <Link
-                    href={`/admin/bookings/${b.id}/alur`}
+                    href={`/admin/bookings/${b.id}`}
                     className="flex-1 rounded-lg bg-forest px-3 py-2 text-center text-sm font-medium text-cream"
                   >
-                    Lihat Alur
-                  </Link>
-                  <Link
-                    href={`/admin/bookings/${b.id}`}
-                    className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm font-medium"
-                  >
-                    Detail
+                    Buka
                   </Link>
                 </div>
               </div>

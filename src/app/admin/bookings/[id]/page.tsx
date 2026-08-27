@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/db";
 import { bookings, payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { formatRupiah, formatTanggal } from "@/lib/format";
+import { formatRupiah, formatTanggal, formatTanggalWaktu } from "@/lib/format";
 import { getItemAvailability } from "@/lib/availability";
 import { updateBookingStatusAction, markDpPaidAction, addPaymentAction } from "../actions";
 
@@ -20,6 +20,14 @@ const statusLabel: Record<string, string> = {
   cancelled: "Batal",
   late: "Terlambat",
 };
+
+const FLOW = [
+  { key: "booking", label: "Pesanan Masuk" },
+  { key: "confirmed", label: "Dikonfirmasi" },
+  { key: "active", label: "Diserahkan" },
+  { key: "returned", label: "Dikembalikan" },
+  { key: "completed", label: "Selesai" },
+];
 
 function StatusBadge({ status }: { status: string }) {
   const tone =
@@ -56,7 +64,7 @@ export default async function BookingDetailPage({
 
   const [b] = await db.query.bookings.findMany({
     where: eq(bookings.id, bookingId),
-    with: { customer: true, items: { with: { item: true } } },
+    with: { customer: true, items: { with: { item: true } }, statusLog: true },
     limit: 1,
   });
   if (!b) notFound();
@@ -67,6 +75,14 @@ export default async function BookingDetailPage({
     .where(eq(payments.bookingId, bookingId));
 
   const totalPaid = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
+
+  const isLate = b.status === "late";
+  let currentIdx = FLOW.findIndex((s) => s.key === b.status);
+  if (isLate) currentIdx = FLOW.findIndex((s) => s.key === "active");
+
+  const log = [...(b.statusLog || [])].sort(
+    (a, c) => new Date(a.createdAt).getTime() - new Date(c.createdAt).getTime(),
+  );
 
   return (
     <div className="space-y-6">
@@ -89,17 +105,67 @@ export default async function BookingDetailPage({
           </div>
         </div>
         <div className="flex gap-2 print:hidden">
-          <Link href={`/admin/bookings/${b.id}/alur`}>
-            <Button variant="outline" size="sm">
-              Lihat Alur
-            </Button>
-          </Link>
           <Link href={`/admin/bookings/${b.id}/invoice`}>
             <Button variant="outline" size="sm">
               Cetak Invoice
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Stepper */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <ol className="flex items-start">
+          {FLOW.map((step, i) => {
+            const state =
+              b.status === "cancelled" || currentIdx < 0
+                ? "upcoming"
+                : i < currentIdx
+                  ? "done"
+                  : i === currentIdx
+                    ? "current"
+                    : "upcoming";
+            return (
+              <li
+                key={step.key}
+                className="flex min-w-0 flex-1 flex-col items-center"
+              >
+                <div className="flex w-full items-center">
+                  <span
+                    className={
+                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold " +
+                      (state === "done"
+                        ? "bg-forest text-cream"
+                        : state === "current"
+                          ? "bg-terracotta text-white ring-2 ring-terracotta/20"
+                          : "bg-secondary text-muted-foreground")
+                    }
+                  >
+                    {state === "done" ? "✓" : i + 1}
+                  </span>
+                  {i < FLOW.length - 1 && (
+                    <span
+                      className={
+                        "mx-1 h-0.5 flex-1 " +
+                        (i < currentIdx ? "bg-forest" : "bg-border")
+                      }
+                    />
+                  )}
+                </div>
+                <span
+                  className={
+                    "mt-1 text-center text-[10px] leading-tight " +
+                    (state === "upcoming"
+                      ? "text-muted-foreground"
+                      : "font-medium text-foreground")
+                  }
+                >
+                  {step.label}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
       </div>
 
       {/* Status actions */}
@@ -237,6 +303,33 @@ export default async function BookingDetailPage({
               <span className="text-muted-foreground">Catatan: </span>
               {b.notes}
             </div>
+          )}
+        </div>
+
+        {/* Timeline status */}
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="mb-3 font-heading text-lg font-semibold">
+            Riwayat Status
+          </h2>
+          {log.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Belum ada riwayat.</p>
+          ) : (
+            <ol className="space-y-3">
+              {log.map((l) => (
+                <li key={l.id} className="flex gap-3 text-sm">
+                  <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-forest" />
+                  <div>
+                    <div className="font-medium">
+                      {statusLabel[l.status] ?? l.status}
+                    </div>
+                    <div className="text-muted-foreground">
+                      {formatTanggalWaktu(l.createdAt)}
+                      {l.note ? ` · ${l.note}` : ""}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
           )}
         </div>
       </div>
