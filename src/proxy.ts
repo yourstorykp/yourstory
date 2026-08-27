@@ -9,7 +9,7 @@ export default NextAuth(authConfig).auth((req: any) => {
 
   if (!req.auth) {
     if (path.endsWith("/login")) return;
-    const login = path.startsWith("/consignor") ? "/consignor/login" : "/admin/login";
+    const login = path.startsWith("/consignor") ? "/login/consignor" : "/login/admin";
     return NextResponse.redirect(
       new URL(login + "?next=" + encodeURIComponent(path), req.url)
     );

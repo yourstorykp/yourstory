@@ -94,14 +94,14 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
         {isAdmin ? (
           <>
             Pemilik titipan?{" "}
-            <Link href="/consignor/login" className="font-medium text-terracotta hover:underline">
+            <Link href="/login/consignor" className="font-medium text-terracotta hover:underline">
               Masuk di sini
             </Link>
           </>
         ) : (
           <>
             Admin?{" "}
-            <Link href="/admin/login" className="font-medium text-terracotta hover:underline">
+            <Link href="/login/admin" className="font-medium text-terracotta hover:underline">
               Masuk di sini
             </Link>
           </>

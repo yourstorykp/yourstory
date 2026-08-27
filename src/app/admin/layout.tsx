@@ -20,7 +20,7 @@ export default async function AdminLayout({
     db.select().from(settings).limit(1),
   ]);
   if (!session || (session.user as { role?: string }).role !== "admin") {
-    redirect("/admin/login");
+    redirect("/login/admin");
   }
   const storeName = s[0]?.storeName ?? "yourstory.kp";
 

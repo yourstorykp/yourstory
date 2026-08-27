@@ -13,7 +13,7 @@ export default async function ConsignorLayout({
 }) {
   const session = await auth();
   if (!session || (session.user as { role?: string }).role !== "consignor") {
-    redirect("/consignor/login");
+    redirect("/login/consignor");
   }
   return (
     <div className="topo-bg flex min-h-screen flex-col">

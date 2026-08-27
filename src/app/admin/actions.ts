@@ -177,7 +177,7 @@ export async function updateSettingsAction(
 }
 
 export async function logoutAction() {
-  await signOut({ redirectTo: "/admin/login" });
+  await signOut({ redirectTo: "/login/admin" });
 }
 
 export async function toggleBlacklistAction(

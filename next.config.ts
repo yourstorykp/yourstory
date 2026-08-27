@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/sewa/:path*", destination: "/:path*", permanent: true },
+      { source: "/login", destination: "/login/admin", permanent: true },
     ];
   },
 };
