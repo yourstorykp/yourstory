@@ -54,17 +54,16 @@ export default async function BookingDetailPage({
   const bookingId = Number(id);
   if (Number.isNaN(bookingId)) notFound();
 
-  const [b] = await db.query.bookings.findMany({
-    where: eq(bookings.id, bookingId),
-    with: { customer: true, items: { with: { item: true } }, statusLog: true },
-    limit: 1,
-  });
+  const [rows, pays] = await Promise.all([
+    db.query.bookings.findMany({
+      where: eq(bookings.id, bookingId),
+      with: { customer: true, items: { with: { item: true } }, statusLog: true },
+      limit: 1,
+    }),
+    db.select().from(payments).where(eq(payments.bookingId, bookingId)),
+  ]);
+  const [b] = rows;
   if (!b) notFound();
-
-  const pays = await db
-    .select()
-    .from(payments)
-    .where(eq(payments.bookingId, bookingId));
 
   const totalPaid = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
 

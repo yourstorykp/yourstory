@@ -15,11 +15,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const [session, s] = await Promise.all([
+    auth(),
+    db.select().from(settings).limit(1),
+  ]);
   if (!session || (session.user as { role?: string }).role !== "admin") {
     redirect("/admin/login");
   }
-  const s = await db.select().from(settings).limit(1);
   const storeName = s[0]?.storeName ?? "yourstory.kp";
 
   return (

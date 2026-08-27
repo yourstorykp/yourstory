@@ -17,13 +17,16 @@ function satuanLabel(s: string) {
 
 const getItem = unstable_cache(
   async (itemId: number) => {
-    const [item] = await db.query.items.findMany({
-      with: { category: true, consignor: true },
-      where: eq(items.id, itemId),
-      limit: 1,
-    });
+    const [itemRows, s] = await Promise.all([
+      db.query.items.findMany({
+        with: { category: true, consignor: true },
+        where: eq(items.id, itemId),
+        limit: 1,
+      }),
+      db.select().from(settings).limit(1),
+    ]);
+    const [item] = itemRows;
     if (!item) return null;
-    const s = await db.select().from(settings).limit(1);
     const dpPct = Number(s[0]?.defaultDpPct ?? 30);
     return { item, dpPct };
   },
@@ -40,11 +43,14 @@ export default async function ItemDetailPage({
   const itemId = Number(id);
   if (Number.isNaN(itemId)) notFound();
 
-  const data = await getItem(itemId);
+  const [data, availability] = await Promise.all([
+    getItem(itemId),
+    getItemAvailability(itemId),
+  ]);
   if (!data) notFound();
   const { item, dpPct } = data;
 
-  const { ranges } = await getItemAvailability(itemId);
+  const { ranges } = availability;
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = ranges.filter((r) => r.end >= today);
 
