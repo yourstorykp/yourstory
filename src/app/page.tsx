@@ -7,13 +7,13 @@ import { Logo } from "@/components/brand/logo";
 export default function SplashPage() {
   const router = useRouter();
   useEffect(() => {
-    const t = setTimeout(() => router.replace("/sewa"), 2500);
+    const t = setTimeout(() => router.replace("/sewa"), 2000);
     return () => clearTimeout(t);
   }, [router]);
 
   return (
     <>
-      <meta httpEquiv="refresh" content="3;url=/sewa" />
+      <meta httpEquiv="refresh" content="2;url=/sewa" />
       <main className="topo-bg flex min-h-screen flex-col items-center justify-center px-4 text-center">
         <Logo className="mb-6" />
         <h1 className="font-heading text-4xl font-semibold text-forest-deep sm:text-5xl">
