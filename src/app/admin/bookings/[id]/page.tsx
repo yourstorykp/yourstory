@@ -45,14 +45,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-const transitions: { to: string; label: string; cls: string }[] = [
-  { to: "confirmed", label: "Konfirmasi", cls: "bg-forest hover:bg-forest-deep" },
-  { to: "active", label: "Tandai Diambil", cls: "bg-terracotta hover:bg-terracotta-deep text-white" },
-  { to: "returned", label: "Tandai Kembali", cls: "bg-forest hover:bg-forest-deep" },
-  { to: "completed", label: "Selesai", cls: "bg-forest hover:bg-forest-deep" },
-  { to: "cancelled", label: "Batalkan", cls: "bg-muted-foreground/20 hover:bg-muted-foreground/30" },
-];
-
 export default async function BookingDetailPage({
   params,
 }: {
@@ -77,8 +69,10 @@ export default async function BookingDetailPage({
   const totalPaid = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
 
   const isLate = b.status === "late";
+  const isCancelled = b.status === "cancelled";
   let currentIdx = FLOW.findIndex((s) => s.key === b.status);
   if (isLate) currentIdx = FLOW.findIndex((s) => s.key === "active");
+  const next = currentIdx >= 0 ? FLOW[currentIdx + 1] : undefined;
 
   const log = [...(b.statusLog || [])].sort(
     (a, c) => new Date(a.createdAt).getTime() - new Date(c.createdAt).getTime(),
@@ -169,20 +163,13 @@ export default async function BookingDetailPage({
       </div>
 
       {/* Status actions */}
-      <div className="flex flex-wrap gap-2">
-        {transitions.map((t) => (
-          <form key={t.to} action={updateBookingStatusAction.bind(null, b.id, t.to)}>
-            <Button
-              type="submit"
-              className={t.cls}
-              variant={t.to === b.status ? "outline" : "default"}
-              disabled={t.to === b.status}
-            >
-              {t.label}
-            </Button>
-          </form>
-        ))}
-      </div>
+      {!isCancelled && b.status !== "completed" && next && (
+        <form action={updateBookingStatusAction.bind(null, b.id, next.key)}>
+          <Button type="submit" className="bg-forest hover:bg-forest-deep">
+            Lanjutkan ke {next.label} →
+          </Button>
+        </form>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Customer & items */}
@@ -332,6 +319,18 @@ export default async function BookingDetailPage({
             </ol>
           )}
         </div>
+
+        {b.status !== "cancelled" && b.status !== "completed" && (
+          <form action={updateBookingStatusAction.bind(null, b.id, "cancelled")}>
+            <Button
+              type="submit"
+              variant="outline"
+              className="w-full text-destructive"
+            >
+              Batalkan Pesanan
+            </Button>
+          </form>
+        )}
       </div>
     </div>
   );
