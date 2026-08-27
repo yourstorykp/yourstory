@@ -8,6 +8,18 @@ export function formatRupiah(value: number | string | null | undefined): string 
   }).format(n);
 }
 
+export function formatRupiahCompact(value: number | string | null | undefined): string {
+  const n = typeof value === "string" ? parseFloat(value) : (value ?? 0);
+  if (isNaN(n)) return "Rp0";
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const trim = (v: number) =>
+    v.toLocaleString("id-ID", { maximumFractionDigits: 1 });
+  if (abs >= 1_000_000) return `${sign}Rp${trim(abs / 1_000_000)}jt`;
+  if (abs >= 1_000) return `${sign}Rp${trim(abs / 1_000)}k`;
+  return `${sign}Rp${Math.round(abs)}`;
+}
+
 export function parseNum(value: FormDataEntryValue | null): string {
   if (value === null) return "0";
   const n = parseFloat(String(value).replace(/[^0-9.]/g, ""));

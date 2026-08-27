@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { items, bookingItems, bookings } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
-import { formatRupiah, formatTanggal } from "@/lib/format";
+import { formatRupiah, formatRupiahCompact, formatTanggal } from "@/lib/format";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -128,10 +128,9 @@ export default async function ConsignorDashboard() {
                           {bi.booking?.status}
                         </div>
                       </td>
-                      <td className="px-4 py-2 text-right">{formatRupiah(bi.subtotal)}</td>
+                      <td className="px-4 py-2 text-right">{formatRupiahCompact(bi.subtotal)}</td>
                       <td className="px-4 py-2 text-right text-forest-deep">
-                        {formatRupiah(String(Math.round(share)))}
-                        <span className="text-xs text-muted-foreground"> ({pct}%)</span>
+                        {formatRupiahCompact(String(Math.round(share)))}
                       </td>
                       <td className="px-4 py-2 text-center">
                         {bi.consignorPaid ? (
@@ -149,9 +148,9 @@ export default async function ConsignorDashboard() {
                   <td className="px-4 py-2" colSpan={2}>
                     Total
                   </td>
-                  <td className="px-4 py-2 text-right">{formatRupiah(String(totalRevenue))}</td>
+                  <td className="px-4 py-2 text-right">{formatRupiahCompact(String(totalRevenue))}</td>
                   <td className="px-4 py-2 text-right">
-                    {formatRupiah(String(Math.round(totalShare)))}
+                    {formatRupiahCompact(String(Math.round(totalShare)))}
                   </td>
                   <td className="px-4 py-2 text-center text-xs text-muted-foreground">
                     {formatRupiah(String(Math.round(unpaidShare)))} blm

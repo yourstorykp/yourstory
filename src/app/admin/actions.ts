@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import { db } from "@/lib/db";
-import { items, categories, settings, customers, consignors } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { items, categories, settings, customers, consignors, bookingItems } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
 
 export interface ActionState {
@@ -75,6 +75,68 @@ export async function createConsignorAction(
   revalidatePath("/admin/items/new");
   revalidatePath("/login/consignor");
   redirect("/admin/titip-sewa");
+}
+
+export async function updateBookingItemAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const id = Number(formData.get("id"));
+  if (!id) return { error: "Data tidak valid." };
+  try {
+    await db
+      .update(bookingItems)
+      .set({ subtotal: parseNum(formData.get("subtotal")) })
+      .where(eq(bookingItems.id, id));
+  } catch (e) {
+    return { error: "Gagal memperbarui: " + (e as Error).message };
+  }
+  revalidatePath("/admin/titip-sewa");
+  revalidatePath("/consignor");
+  return { success: true };
+}
+
+export async function deleteBookingItemAction(id: number) {
+  try {
+    await db.delete(bookingItems).where(eq(bookingItems.id, id));
+  } catch (e) {
+    return { error: "Gagal menghapus: " + (e as Error).message };
+  }
+  revalidatePath("/admin/titip-sewa");
+  revalidatePath("/consignor");
+  return { success: true };
+}
+
+export async function clearConsignorMonthAction(
+  consignorId: number,
+  year: number,
+  month: number
+) {
+  const myItems = await db.query.items.findMany({
+    where: eq(items.consignorId, consignorId),
+    columns: { id: true },
+  });
+  const itemIds = myItems.map((i) => i.id);
+  if (itemIds.length) {
+    const bis = await db.query.bookingItems.findMany({
+      where: inArray(bookingItems.itemId, itemIds),
+      with: { booking: true },
+    });
+    const ids = bis
+      .filter((bi) => {
+        const d = bi.booking?.startDate;
+        if (!d) return false;
+        const dt = new Date(d);
+        return dt.getFullYear() === year && dt.getMonth() + 1 === month;
+      })
+      .map((bi) => bi.id);
+    if (ids.length) {
+      await db.delete(bookingItems).where(inArray(bookingItems.id, ids));
+    }
+  }
+  revalidatePath("/admin/titip-sewa");
+  revalidatePath("/consignor");
+  return { success: true };
 }
 
 export async function updateItemAction(
