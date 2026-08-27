@@ -4,7 +4,6 @@ import { items, bookingItems, bookings } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { formatRupiah, formatTanggal } from "@/lib/format";
 import Link from "next/link";
-import { PaidCheckbox } from "@/components/consignor/paid-checkbox";
 
 export const dynamic = "force-dynamic";
 
@@ -135,7 +134,11 @@ export default async function ConsignorDashboard() {
                         <span className="text-xs text-muted-foreground"> ({pct}%)</span>
                       </td>
                       <td className="px-4 py-2 text-center">
-                        <PaidCheckbox id={bi.id} checked={!!bi.consignorPaid} />
+                        {bi.consignorPaid ? (
+                          <span className="text-xs font-medium text-forest-deep">Lunas</span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Belum lunas</span>
+                        )}
                       </td>
                     </tr>
                   );

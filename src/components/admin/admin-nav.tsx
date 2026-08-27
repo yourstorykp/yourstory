@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/consignors", label: "Pemilik Titipan" },
+  { href: "/admin/titip-sewa", label: "Titip Sewa" },
   { href: "/admin/items", label: "Inventaris" },
   { href: "/admin/bookings", label: "Booking" },
   { href: "/admin/laporan", label: "Laporan" },

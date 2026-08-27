@@ -71,10 +71,10 @@ export async function createConsignorAction(
     if (/duplicate|unique/i.test(msg)) return { error: "Email sudah terdaftar." };
     return { error: "Gagal menyimpan: " + msg };
   }
-  revalidatePath("/admin/consignors");
+  revalidatePath("/admin/titip-sewa");
   revalidatePath("/admin/items/new");
   revalidatePath("/login/consignor");
-  redirect("/admin/consignors");
+  redirect("/admin/titip-sewa");
 }
 
 export async function updateItemAction(
