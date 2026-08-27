@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { bookingDisplayCode } from "@/lib/booking";
 import { formatRupiah, formatTanggal, formatTanggalWaktu } from "@/lib/format";
 import { getItemAvailability } from "@/lib/availability";
-import { updateBookingStatusAction, markDpPaidAction, addPaymentAction } from "../actions";
+import { updateBookingStatusAction, markDpPaidAction, markLunasAction, addPaymentAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +67,7 @@ export default async function BookingDetailPage({
   if (!b) notFound();
 
   const totalPaid = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
+  const dpPct = b.total ? Math.round((Number(b.dpAmount) / Number(b.total)) * 100) : 0;
 
   const isLate = b.status === "late";
   const isCancelled = b.status === "cancelled";
@@ -210,7 +211,7 @@ export default async function BookingDetailPage({
                 <span className="font-medium">{formatRupiah(b.total)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">DP (30%)</span>
+                <span className="text-muted-foreground">DP ({dpPct}%)</span>
                 <span className="font-medium">{formatRupiah(b.dpAmount)}</span>
                 {b.dpPaid ? (
                   <span className="text-forest-deep">✓ lunas</span>
@@ -226,6 +227,17 @@ export default async function BookingDetailPage({
                 <span className="text-muted-foreground">Sisa</span>
                 <span className="font-medium">{formatRupiah(b.remaining)}</span>
               </div>
+              {Number(b.remaining) > 0 && b.status !== "completed" && !isCancelled && (
+                <form action={markLunasAction.bind(null, b.id)} className="mt-2">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="w-full bg-forest hover:bg-forest-deep"
+                  >
+                    Pelunasan (sisa {formatRupiah(b.remaining)})
+                  </Button>
+                </form>
+              )}
               <div className="flex justify-between border-t border-border/60 pt-1">
                 <span className="text-muted-foreground">Total dibayar</span>
                 <span className="font-medium">{formatRupiah(String(totalPaid))}</span>

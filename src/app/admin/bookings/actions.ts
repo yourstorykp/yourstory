@@ -51,9 +51,42 @@ export async function markDpPaidAction(
   _fd?: FormData,
 ): Promise<void> {
   try {
+    const [b] = await db
+      .select({ dpAmount: bookings.dpAmount })
+      .from(bookings)
+      .where(eq(bookings.id, bookingId))
+      .limit(1);
     await db.update(bookings).set({ dpPaid: true }).where(eq(bookings.id, bookingId));
+    if (b) {
+      await db
+        .insert(payments)
+        .values({ bookingId, type: "dp", amount: b.dpAmount, method: "transfer" });
+    }
   } catch (e) {
     console.error("markDpPaidAction:", e);
+  }
+  revalidatePath("/admin/bookings");
+  revalidatePath(`/admin/bookings/${bookingId}`);
+}
+
+export async function markLunasAction(
+  bookingId: number,
+  _fd?: FormData,
+): Promise<void> {
+  try {
+    const [b] = await db
+      .select({ remaining: bookings.remaining, dpPaid: bookings.dpPaid })
+      .from(bookings)
+      .where(eq(bookings.id, bookingId))
+      .limit(1);
+    if (b) {
+      await db
+        .insert(payments)
+        .values({ bookingId, type: "remaining", amount: b.remaining, method: "tunai" });
+      await db.update(bookings).set({ dpPaid: true }).where(eq(bookings.id, bookingId));
+    }
+  } catch (e) {
+    console.error("markLunasAction:", e);
   }
   revalidatePath("/admin/bookings");
   revalidatePath(`/admin/bookings/${bookingId}`);

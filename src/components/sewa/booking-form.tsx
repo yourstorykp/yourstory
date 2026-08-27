@@ -109,16 +109,38 @@ export function BookingForm({
 
       <div className="space-y-2">
         <Label htmlFor="qty">Jumlah Unit</Label>
-        <Input
-          id="qty"
-          name="qty"
-          type="number"
-          min={1}
-          max={item.stokTotal}
-          value={qty}
-          onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
-          onFocus={(e) => e.currentTarget.select()}
-        />
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 shrink-0"
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            aria-label="Kurang"
+          >
+            −
+          </Button>
+          <Input
+            id="qty"
+            name="qty"
+            type="number"
+            min={1}
+            max={item.stokTotal}
+            value={qty}
+            onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+            className="text-center"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 shrink-0"
+            onClick={() => setQty((q) => Math.min(item.stokTotal, q + 1))}
+            aria-label="Tambah"
+          >
+            +
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-2">

@@ -22,19 +22,40 @@ export function AddToCartButton({
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">Jumlah unit</span>
-        <input
-          type="number"
-          min={1}
-          max={item.stokTotal}
-          value={qty}
-          onChange={(e) =>
-            setQty(
-              Math.max(1, Math.min(item.stokTotal, Number(e.target.value) || 1)),
-            )
-          }
-          onFocus={(e) => e.currentTarget.select()}
-          className="h-9 w-20 rounded-lg border border-input bg-card px-2 text-center text-sm"
-        />
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            aria-label="Kurang"
+          >
+            −
+          </Button>
+          <input
+            type="number"
+            min={1}
+            max={item.stokTotal}
+            value={qty}
+            onChange={(e) =>
+              setQty(
+                Math.max(1, Math.min(item.stokTotal, Number(e.target.value) || 1)),
+              )
+            }
+            className="h-9 w-16 rounded-lg border border-input bg-card px-2 text-center text-sm"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setQty((q) => Math.min(item.stokTotal, q + 1))}
+            aria-label="Tambah"
+          >
+            +
+          </Button>
+        </div>
       </div>
       <Button
         type="button"
