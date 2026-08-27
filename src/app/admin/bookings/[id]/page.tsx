@@ -122,7 +122,7 @@ export default async function BookingDetailPage({
             return (
               <li
                 key={step.key}
-                className="flex min-w-0 flex-1 flex-col items-center"
+                className="flex min-w-0 flex-1 flex-col items-start"
               >
                 <div className="flex w-full items-center">
                   <span
@@ -148,8 +148,11 @@ export default async function BookingDetailPage({
                 </div>
                 <span
                   className={
-  `mt-1 ${i === 0 ? "text-left" : i === FLOW.length - 1 ? "text-right" : "text-center"} text-[10px] leading-tight ${state === "upcoming" ? "text-muted-foreground" : "font-medium text-foreground"}`
-}
+                    "mt-1 w-7 text-center text-[10px] leading-tight " +
+                    (state === "upcoming"
+                      ? "text-muted-foreground"
+                      : "font-medium text-foreground")
+                  }
                 >
                   {step.label}
                 </span>
