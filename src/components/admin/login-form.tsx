@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,31 +9,11 @@ import { Logo } from "@/components/brand/logo";
 import { loginWithCredentials } from "@/app/login/actions";
 
 export function LoginForm({ role }: { role: "admin" | "consignor" }) {
-  const router = useRouter();
   const sp = useSearchParams();
   const next = sp.get("next") || "";
-  const [error, setError] = useState("");
-  const [pending, setPending] = useState(false);
+  const [state, formAction, pending] = useActionState(loginWithCredentials, {});
 
   const isAdmin = role === "admin";
-  const redirectTo = next || (isAdmin ? "/admin" : "/consignor");
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError("");
-    setPending(true);
-    const fd = new FormData(e.currentTarget);
-    fd.set("role", role);
-    if (next) fd.set("next", next);
-    const res = await loginWithCredentials(fd);
-    setPending(false);
-    if (res && !res.ok) {
-      setError(res.error || "Gagal login.");
-      return;
-    }
-    router.push(redirectTo);
-    router.refresh();
-  }
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-border bg-card/95 p-9 shadow-xl backdrop-blur">
@@ -49,7 +29,10 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form action={formAction} className="space-y-4">
+        <input type="hidden" name="role" value={role} />
+        {next && <input type="hidden" name="next" value={next} />}
+
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -73,9 +56,9 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
             placeholder="••••••••"
           />
         </div>
-        {error && (
+        {state?.error && (
           <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {error}
+            {state.error}
           </p>
         )}
         <Button
