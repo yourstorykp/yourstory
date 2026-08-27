@@ -7,7 +7,7 @@ import {
   items,
   bookingStatusLog,
 } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { getItemAvailability, hasConflict } from "@/lib/availability";
 
 export type BookingInput = {
@@ -101,6 +101,130 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
     subtotal: String(days * qty * price),
     maintenanceDays: item.maintenanceDays,
   });
+
+  const code = `YS-${b.id}-${new Date().getFullYear()}`;
+  return { code, total, dp, remaining };
+}
+
+export type MultiBookingItem = { itemId: number; qty: number };
+
+export type MultiBookingInput = {
+  items: MultiBookingItem[];
+  name: string;
+  contact: string;
+  email?: string;
+  startDate: string;
+  endDate: string;
+  notes?: string;
+};
+
+export async function createBookingMulti(
+  input: MultiBookingInput,
+): Promise<BookingResult> {
+  const { name, contact, email, startDate, endDate, notes } = input;
+
+  if (!input.items.length) throw new Error("Keranjang kosong.");
+  if (!startDate || !endDate) {
+    throw new Error("Tanggal sewa dan tanggal kembali wajib diisi.");
+  }
+  if (new Date(endDate) < new Date(startDate)) {
+    throw new Error("Tanggal kembali tidak boleh sebelum tanggal sewa.");
+  }
+
+  const days = Math.max(
+    1,
+    Math.round(
+      (new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000,
+    ) + 1,
+  );
+
+  const ids = input.items.map((i) => i.itemId);
+  const allItems = await db.select().from(items).where(inArray(items.id, ids));
+  const byId = new Map(allItems.map((i) => [i.id, i]));
+
+  let total = 0;
+  const lines: {
+    itemId: number;
+    qty: number;
+    price: number;
+    subtotal: number;
+    maintenanceDays: number;
+  }[] = [];
+
+  for (const { itemId, qty } of input.items) {
+    const item = byId.get(itemId);
+    if (!item) throw new Error("Ada barang yang tidak valid.");
+    const q = Math.max(1, qty);
+    if (q > item.stokTotal) {
+      throw new Error(`Stok ${item.name} hanya ${item.stokTotal} unit.`);
+    }
+    const { stokTotal, ranges } = await getItemAvailability(itemId);
+    if (hasConflict(stokTotal, ranges, startDate, endDate, q)) {
+      throw new Error(
+        `Maaf, stok ${item.name} tidak tersedia pada tanggal yang dipilih.`,
+      );
+    }
+    const price = Number(item.hargaSewa) || 0;
+    const subtotal = days * q * price;
+    total += subtotal;
+    lines.push({
+      itemId,
+      qty: q,
+      price,
+      subtotal,
+      maintenanceDays: item.maintenanceDays,
+    });
+  }
+
+  const s = await db.select().from(settings).limit(1);
+  const dpPct = Number(s[0]?.defaultDpPct ?? 30);
+  const dp = Math.round((total * dpPct) / 100);
+  const remaining = total - dp;
+
+  let customerId: number;
+  const existing = await db
+    .select()
+    .from(customers)
+    .where(eq(customers.contact, contact))
+    .limit(1);
+  if (existing.length) {
+    customerId = existing[0].id;
+  } else {
+    const [c] = await db
+      .insert(customers)
+      .values({ name, contact, email, notes: "" })
+      .returning({ id: customers.id });
+    customerId = c.id;
+  }
+
+  const [b] = await db
+    .insert(bookings)
+    .values({
+      customerId,
+      startDate,
+      endDate,
+      total: String(total),
+      dpAmount: String(dp),
+      remaining: String(remaining),
+      status: "booking",
+      notes,
+    })
+    .returning({ id: bookings.id });
+
+  await db
+    .insert(bookingStatusLog)
+    .values({ bookingId: b.id, status: "booking" });
+
+  await db.insert(bookingItems).values(
+    lines.map((l) => ({
+      bookingId: b.id,
+      itemId: l.itemId,
+      qty: l.qty,
+      price: String(l.price),
+      subtotal: String(l.subtotal),
+      maintenanceDays: l.maintenanceDays,
+    })),
+  );
 
   const code = `YS-${b.id}-${new Date().getFullYear()}`;
   return { code, total, dp, remaining };

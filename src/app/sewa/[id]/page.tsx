@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
 import { getItemAvailability } from "@/lib/availability";
 import { BookingModal } from "@/components/sewa/booking-modal";
+import { AddToCartButton } from "@/components/sewa/add-to-cart";
 
 export const revalidate = 120;
 
@@ -138,15 +139,24 @@ export default async function ItemDetailPage({
               Pilih tanggal sewa dan jumlah unit, lalu tim kami akan konfirmasi
               ketersediaan & pembayaran via WhatsApp.
             </p>
-            <BookingModal
-              item={{
-                id: item.id,
-                hargaSewa: item.hargaSewa,
-                stokTotal: item.stokTotal,
-                satuanSewa: item.satuanSewa,
-              }}
-              dpPct={dpPct}
-            />
+              <AddToCartButton
+                item={{
+                  id: item.id,
+                  name: item.name,
+                  hargaSewa: item.hargaSewa,
+                  stokTotal: item.stokTotal,
+                  satuanSewa: item.satuanSewa,
+                }}
+              />
+              <BookingModal
+                item={{
+                  id: item.id,
+                  hargaSewa: item.hargaSewa,
+                  stokTotal: item.stokTotal,
+                  satuanSewa: item.satuanSewa,
+                }}
+                dpPct={dpPct}
+              />
           </div>
         </div>
       </div>

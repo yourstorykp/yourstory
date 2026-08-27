@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
+import { useCart } from "./cart-context";
 
 export type CatalogItem = {
   id: number;
@@ -31,6 +32,7 @@ export function CatalogClient({
   items: CatalogItem[];
   categories: CatalogCategory[];
 }) {
+  const { add } = useCart();
   const [cat, setCat] = useState<string>("");
   const [q, setQ] = useState<string>("");
 
@@ -130,6 +132,27 @@ export function CatalogClient({
               >
                 {it.category?.name ?? "Tanpa kategori"}
               </Badge>
+              <button
+                type="button"
+                aria-label="Tambah ke keranjang"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  add(
+                    {
+                      itemId: it.id,
+                      name: it.name,
+                      hargaSewa: it.hargaSewa,
+                      satuanSewa: it.satuanSewa,
+                      stokTotal: it.stokTotal,
+                    },
+                    1,
+                  );
+                }}
+                className="absolute right-2 top-2 rounded-full bg-forest px-2 py-1 text-xs font-medium text-cream shadow hover:bg-forest-deep"
+              >
+                + Keranjang
+              </button>
             </div>
             <div className="space-y-1 p-4">
               <h3 className="font-heading text-lg font-semibold leading-snug">
