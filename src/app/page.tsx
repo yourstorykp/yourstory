@@ -1,8 +1,16 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 
-export default function HomePage() {
+export default function SplashPage() {
+  const router = useRouter();
+  useEffect(() => {
+    const t = setTimeout(() => router.replace("/sewa"), 2500);
+    return () => clearTimeout(t);
+  }, [router]);
+
   return (
     <main className="topo-bg flex min-h-screen flex-col items-center justify-center px-4 text-center">
       <Logo className="mb-6" />
@@ -15,17 +23,6 @@ export default function HomePage() {
         yourstory.kp membantu kamu kelola inventaris, booking, dan barang titipan
         dalam satu sistem.
       </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Button render={<Link href="/sewa" />} className="bg-forest hover:bg-forest-deep">
-          Lihat Katalog Sewa
-        </Button>
-        <Button render={<Link href="/admin" />} variant="outline">
-          Masuk Admin
-        </Button>
-        <Button render={<Link href="/consignor/login" />} variant="outline">
-          Pemilik Titipan
-        </Button>
-      </div>
     </main>
   );
 }

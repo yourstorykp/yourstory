@@ -17,27 +17,18 @@ export default function SewaLayout({
             <Link href="/sewa" className="inline-flex items-center gap-2">
               <Logo className="scale-90" />
             </Link>
-            <nav className="flex items-center gap-2 text-sm">
-              <Button render={<Link href="/sewa" />} variant="ghost" size="sm">
-                Katalog
-              </Button>
-              <Button
-                render={<Link href="/admin" />}
-                variant="outline"
-                size="sm"
-                className="hidden sm:inline-flex"
-              >
-                Masuk Admin
-              </Button>
-              <Button
-                render={<Link href="/consignor/login" />}
-                variant="outline"
-                size="sm"
-                className="hidden sm:inline-flex"
-              >
-                Pemilik Titipan
-              </Button>
-            </nav>
+          <nav className="flex items-center gap-2 text-sm">
+            <Button render={<Link href="/sewa" />} variant="ghost" size="sm">
+              Katalog
+            </Button>
+            <Button
+              render={<Link href="/login" />}
+              variant="outline"
+              size="sm"
+            >
+              Login
+            </Button>
+          </nav>
           </div>
         </header>
 

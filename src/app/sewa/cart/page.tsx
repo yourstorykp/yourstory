@@ -13,7 +13,7 @@ export default function CartCheckoutPage() {
         ← Kembali ke katalog
       </Link>
       <h1 className="mt-2 font-heading text-2xl font-semibold text-forest-deep">
-        Booking Keranjang
+        Keranjang Booking
       </h1>
       <p className="mb-4 text-sm text-muted-foreground">
         Pilih tanggal sewa untuk semua barang, lalu kirim pesanan.
