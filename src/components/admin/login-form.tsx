@@ -23,12 +23,15 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
     setError("");
     setPending(true);
     const fd = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
-      email: fd.get("email") as string,
-      password: fd.get("password") as string,
-      role,
-      redirect: false,
-    });
+    const res = await signIn(
+      "credentials",
+      {
+        email: fd.get("email") as string,
+        password: fd.get("password") as string,
+        role,
+      },
+      { redirect: false },
+    );
     setPending(false);
     if (res?.error) {
       setError("Email atau password salah.");
