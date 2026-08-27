@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createBookingAction, type BookingState } from "@/app/sewa/actions";
+import { createBookingAction, type BookingState } from "@/app/(public)/actions";
 import { formatRupiah } from "@/lib/format";
 
 function diffDays(a: string, b: string) {
@@ -68,7 +68,7 @@ export function BookingForm({
           via WhatsApp. Terima kasih!
         </p>
         <Button
-          render={<Link href="/sewa" />}
+          render={<Link href="/" />}
           className="mt-5 bg-forest hover:bg-forest-deep"
         >
           Kembali ke katalog

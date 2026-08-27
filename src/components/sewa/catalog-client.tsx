@@ -110,7 +110,7 @@ export function CatalogClient({
         {filtered.map((it) => (
           <Link
             key={it.id}
-            href={`/sewa/${it.id}`}
+            href={`/${it.id}`}
             className="group block overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md"
           >
             <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-forest/25 to-sand">

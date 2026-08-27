@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   createCartBookingAction,
   type BookingState,
-} from "@/app/sewa/actions";
+} from "@/app/(public)/actions";
 import { useCart } from "./cart-context";
 import { formatRupiah } from "@/lib/format";
 
@@ -57,7 +57,7 @@ export function CartCheckout() {
           via WhatsApp. Terima kasih!
         </p>
         <Button
-          render={<Link href="/sewa" />}
+          render={<Link href="/" />}
           className="mt-5 bg-forest hover:bg-forest-deep"
         >
           Kembali ke katalog
@@ -70,7 +70,7 @@ export function CartCheckout() {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card/50 p-10 text-center text-sm text-muted-foreground">
         Keranjang kosong.{" "}
-        <Link href="/sewa" className="text-forest-deep underline">
+        <Link href="/" className="text-forest-deep underline">
           Pilih barang di katalog
         </Link>
         .

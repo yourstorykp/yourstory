@@ -58,7 +58,7 @@ export default async function ItemDetailPage({
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <Link
-        href="/sewa"
+        href="/"
         className="text-sm text-muted-foreground hover:text-foreground"
       >
         ← Kembali ke katalog

@@ -106,7 +106,7 @@ export function CartWidget() {
                   ))}
                 </ul>
                 <Link
-                  href="/sewa/cart"
+                  href="/cart"
                   onClick={() => setOpen(false)}
                   className="mt-3 block rounded-lg bg-forest px-3 py-2 text-center text-sm font-medium text-cream"
                 >

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { items, categories } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { CatalogClient, type CatalogItem } from "@/components/sewa/catalog-client";
+import { SplashOverlay } from "@/components/sewa/splash-overlay";
 
 export const revalidate = 120;
 
@@ -21,8 +22,13 @@ const getCatalogData = unstable_cache(
   { revalidate: 120, tags: ["catalog", "items"] },
 );
 
-export default async function SewaPage() {
+export default async function CatalogPage() {
   const { cats, rows } = await getCatalogData();
 
-  return <CatalogClient items={rows as CatalogItem[]} categories={cats} />;
+  return (
+    <>
+      <SplashOverlay />
+      <CatalogClient items={rows as CatalogItem[]} categories={cats} />
+    </>
+  );
 }
