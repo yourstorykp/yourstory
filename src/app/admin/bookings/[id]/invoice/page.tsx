@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PrintButton } from "@/components/admin/print-button";
 import { db } from "@/lib/db";
-import { bookings } from "@/db/schema";
+import { bookings, payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { bookingDisplayCode } from "@/lib/booking";
 import { formatRupiah, formatTanggal } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -86,7 +87,7 @@ export default async function InvoicePage({
               BUKTI SEWA
             </div>
             <div className="text-muted-foreground">
-              No: YS-{b.id}-{new Date(b.createdAt).getFullYear()}
+              No: {bookingDisplayCode(b)}
             </div>
             <div className="text-muted-foreground">
               {formatTanggal(new Date())}

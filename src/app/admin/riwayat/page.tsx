@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { BookingsList } from "@/components/admin/bookings-list";
+import { bookingDisplayCode } from "@/lib/booking";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export default async function RiwayatPage() {
   });
 
   const data = rows.map((b) => ({
-    code: `YS-${b.id}-${new Date(b.createdAt).getFullYear()}`,
+    code: bookingDisplayCode(b),
     id: b.id,
     status: b.status,
     customerName: b.customer?.name ?? null,

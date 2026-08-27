@@ -4,6 +4,7 @@ import { desc } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BookingsList } from "@/components/admin/bookings-list";
+import { bookingDisplayCode } from "@/lib/booking";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function BookingsPage() {
   const data = rows
     .filter((b) => b.status !== "completed")
     .map((b) => ({
-    code: `YS-${b.id}-${new Date(b.createdAt).getFullYear()}`,
+    code: bookingDisplayCode(b),
     id: b.id,
     status: b.status,
     customerName: b.customer?.name ?? null,

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
 import { desc } from "drizzle-orm";
+import { bookingDisplayCode } from "@/lib/booking";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
     );
     const sisa = Math.max(0, total - paid);
     const row = [
-      `YS-${b.id}-${new Date(b.createdAt).getFullYear()}`,
+      bookingDisplayCode(b),
       b.customer?.name ?? "",
       b.customer?.contact ?? "",
       b.startDate,

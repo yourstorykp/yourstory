@@ -28,6 +28,36 @@ export type BookingResult = {
   remaining: number;
 };
 
+export function bookingDisplayCode(b: {
+  id: number;
+  kode: string | null;
+  createdAt: Date | string | null;
+}): string {
+  if (b.kode) return b.kode;
+  const y = b.createdAt ? new Date(b.createdAt).getFullYear() : new Date().getFullYear();
+  return `YS-${b.id}-${y}`;
+}
+
+export async function buildBookingCode(
+  name: string,
+  startDate: string,
+  id: number,
+): Promise<string> {
+  const day = Number(String(startDate).slice(8, 10)) || new Date().getDate();
+  const base =
+    (name.trim().split(/\s+/)[0] || "SEWA")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 12) || "SEWA";
+  const candidate = `${base}${day}`;
+  const clash = await db
+    .select({ id: bookings.id })
+    .from(bookings)
+    .where(eq(bookings.kode, candidate))
+    .limit(1);
+  return clash.length ? `${base}${day}${id}` : candidate;
+}
+
 export async function createBooking(input: BookingInput): Promise<BookingResult> {
   const { itemId, name, contact, email, startDate, endDate, notes } = input;
   const qty = Math.max(1, Number(input.qty) || 1);
@@ -102,7 +132,8 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
     maintenanceDays: item.maintenanceDays,
   });
 
-  const code = `YS-${b.id}-${new Date().getFullYear()}`;
+  const code = await buildBookingCode(name, startDate, b.id);
+  await db.update(bookings).set({ kode: code }).where(eq(bookings.id, b.id));
   return { code, total, dp, remaining };
 }
 
@@ -226,6 +257,7 @@ export async function createBookingMulti(
     })),
   );
 
-  const code = `YS-${b.id}-${new Date().getFullYear()}`;
+  const code = await buildBookingCode(name, startDate, b.id);
+  await db.update(bookings).set({ kode: code }).where(eq(bookings.id, b.id));
   return { code, total, dp, remaining };
 }

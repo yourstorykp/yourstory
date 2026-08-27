@@ -15,6 +15,7 @@ import {
 import { eq } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
 import { getItemAvailability, hasConflict } from "@/lib/availability";
+import { buildBookingCode } from "@/lib/booking";
 
 const ALLOWED = [
   "booking",
@@ -190,6 +191,9 @@ export async function adminCreateBookingAction(
       maintenanceDays: byId.get(l.itemId)?.maintenanceDays ?? 0,
     })),
   );
+
+  const code = await buildBookingCode(name, startDate, b.id);
+  await db.update(bookings).set({ kode: code }).where(eq(bookings.id, b.id));
 
   revalidatePath("/admin/bookings");
   redirect(`/admin/bookings/${b.id}`);

@@ -117,6 +117,7 @@ export function BookingForm({
           max={item.stokTotal}
           value={qty}
           onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+          onFocus={(e) => e.currentTarget.select()}
         />
       </div>
 

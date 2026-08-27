@@ -32,7 +32,8 @@ export function AddToCartButton({
               Math.max(1, Math.min(item.stokTotal, Number(e.target.value) || 1)),
             )
           }
-          className="h-9 w-20 rounded-lg border border-input bg-card px-2 text-sm"
+          onFocus={(e) => e.currentTarget.select()}
+          className="h-9 w-20 rounded-lg border border-input bg-card px-2 text-center text-sm"
         />
       </div>
       <Button

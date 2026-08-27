@@ -5,6 +5,7 @@ import { count, sql, eq, notInArray, desc } from "drizzle-orm";
 import { formatRupiah, formatTanggal } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { bookingDisplayCode } from "@/lib/booking";
 
 export const revalidate = 60; // Cache halaman selama 60 detik
 
@@ -95,7 +96,7 @@ export default async function AdminDashboard() {
                   href={`/admin/bookings/${b.id}`}
                   className="font-medium text-forest-deep hover:underline"
                 >
-                  YS-{b.id}-{new Date(b.createdAt).getFullYear()}
+                  {bookingDisplayCode(b)}
                 </Link>
                 <div className="text-xs text-muted-foreground">
                    {b.customer?.name ?? "?"} · {formatTanggal(b.startDate)} s.d. {formatTanggal(b.endDate)}

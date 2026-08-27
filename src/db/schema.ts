@@ -87,6 +87,7 @@ export const bookings = pgTable("bookings", {
   depositReturned: boolean("deposit_returned").notNull().default(false),
   status: text("status").notNull().default("booking"),
   notes: text("notes"),
+  kode: text("kode"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

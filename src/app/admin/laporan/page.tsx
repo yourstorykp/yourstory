@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { formatRupiah, formatTanggal } from "@/lib/format";
+import { bookingDisplayCode } from "@/lib/booking";
 
 export const dynamic = "force-dynamic";
 
@@ -165,7 +166,7 @@ export default async function LaporanPage({
                         href={`/admin/bookings/${b.id}`}
                         className="text-forest-deep hover:underline"
                       >
-                        YS-{b.id}-{new Date(b.createdAt).getFullYear()}
+                        {bookingDisplayCode(b)}
                       </Link>
                     </td>
                     <td className="px-3 py-2">{b.customer?.name ?? "—"}</td>

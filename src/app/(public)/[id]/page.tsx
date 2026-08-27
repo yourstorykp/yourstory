@@ -20,7 +20,7 @@ const getItem = unstable_cache(
   async (itemId: number) => {
     const [itemRows, s] = await Promise.all([
       db.query.items.findMany({
-        with: { category: true, consignor: true },
+        with: { category: true },
         where: eq(items.id, itemId),
         limit: 1,
       }),
@@ -88,9 +88,6 @@ export default async function ItemDetailPage({
               <Badge variant="secondary" className="bg-terracotta/15 text-terracotta-deep">
                 {item.category?.name ?? "Tanpa kategori"}
               </Badge>
-              {item.ownerType === "consignor" && (
-                <Badge variant="outline">Titipan · {item.consignor?.name ?? "?"}</Badge>
-              )}
             </div>
             <h1 className="mt-2 font-heading text-2xl font-semibold text-forest-deep">
               {item.name}
