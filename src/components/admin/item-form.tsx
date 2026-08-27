@@ -146,17 +146,25 @@ export function ItemForm({
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <Label>Kepemilikan</Label>
-            <Select value={ownerType} onValueChange={(v) => setOwnerType(v ?? "store")}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="store">Milik Toko</SelectItem>
-                <SelectItem value="consignor">Titipan (Consignor)</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">
+              Milik:{" "}
+              <span className="font-medium text-forest-deep">
+                {ownerType === "consignor" ? "Pemilik Titipan" : "Toko (Admin)"}
+              </span>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={ownerType === "consignor"}
+                onChange={(e) =>
+                  setOwnerType(e.target.checked ? "consignor" : "store")
+                }
+                className="h-4 w-4 rounded border-border accent-forest"
+              />
+              Barang ini milik pemilik titipan (consignor)
+            </label>
           </div>
 
           {ownerType === "consignor" && (

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import { db } from "@/lib/db";
-import { items, categories, settings, customers } from "@/db/schema";
+import { items, categories, settings, customers, consignors } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
 
@@ -44,6 +44,37 @@ export async function createItemAction(
   revalidatePath("/admin/items");
   revalidatePath("/");
   redirect("/admin/items");
+}
+
+export async function createConsignorAction(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const name = parseText(formData.get("name"));
+  const email = parseText(formData.get("email"));
+  const password = parseText(formData.get("password"));
+  if (!name || !email || !password) {
+    return { error: "Nama, email, dan password wajib diisi." };
+  }
+  try {
+    const bcrypt = (await import("bcryptjs")).default;
+    const passwordHash = await bcrypt.hash(password, 10);
+    await db.insert(consignors).values({
+      name,
+      email,
+      passwordHash,
+      contact: parseText(formData.get("contact")) || null,
+      notes: parseText(formData.get("notes")) || null,
+    });
+  } catch (e) {
+    const msg = (e as Error).message;
+    if (/duplicate|unique/i.test(msg)) return { error: "Email sudah terdaftar." };
+    return { error: "Gagal menyimpan: " + msg };
+  }
+  revalidatePath("/admin/consignors");
+  revalidatePath("/admin/items/new");
+  revalidatePath("/login/consignor");
+  redirect("/admin/consignors");
 }
 
 export async function updateItemAction(
