@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { AdminMobileNav } from "@/components/admin/mobile-nav";
+import { AdminMobileBar } from "@/components/admin/mobile-bar";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
@@ -28,12 +28,9 @@ export default async function AdminLayout({
     <div className="topo-bg flex min-h-screen flex-col">
       <header className="border-b border-border bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <AdminMobileNav storeName={storeName} />
-            <Link href="/admin">
-              <Logo />
-            </Link>
-          </div>
+          <Link href="/admin">
+            <Logo />
+          </Link>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-muted-foreground">{storeName}</span>
             <LogoutButton />
@@ -45,8 +42,10 @@ export default async function AdminLayout({
         <aside className="hidden w-56 shrink-0 md:block">
           <AdminNav />
         </aside>
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1 pb-20 md:pb-0">{children}</main>
       </div>
+
+      <AdminMobileBar storeName={storeName} />
     </div>
   );
 }
