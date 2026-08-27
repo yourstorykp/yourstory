@@ -98,6 +98,7 @@ export const bookingItems = pgTable("booking_items", {
   price: numeric("price", { precision: 12, scale: 2 }).notNull().default("0"),
   subtotal: numeric("subtotal", { precision: 12, scale: 2 }).notNull().default("0"),
   maintenanceDays: integer("maintenance_days").notNull().default(0),
+  consignorPaid: boolean("consignor_paid").notNull().default(false),
 });
 
 export const payments = pgTable("payments", {

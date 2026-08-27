@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import { items, bookingItems, bookings } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { formatRupiah, formatTanggal } from "@/lib/format";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { PaidCheckbox } from "@/components/consignor/paid-checkbox";
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +29,14 @@ export default async function ConsignorDashboard() {
 
   let totalRevenue = 0;
   let totalShare = 0;
+  let unpaidShare = 0;
   for (const bi of bis) {
     const sub = Number(bi.subtotal || 0);
-    totalRevenue += sub;
     const pct = Number(bi.item?.profitSharePct || 0);
-    totalShare += (sub * pct) / 100;
+    const share = (sub * pct) / 100;
+    totalRevenue += sub;
+    totalShare += share;
+    if (!bi.consignorPaid) unpaidShare += share;
   }
 
   return (
@@ -94,33 +97,73 @@ export default async function ConsignorDashboard() {
         <div className="border-b border-border px-4 py-3">
           <h2 className="font-heading text-lg font-semibold">Riwayat Sewa Barang Titipan</h2>
         </div>
-        <ul className="divide-y divide-border/60">
-          {bis.length === 0 && (
-            <li className="px-4 py-8 text-center text-sm text-muted-foreground">
-              Belum ada penyewaan.
-            </li>
-          )}
-          {bis.map((bi) => (
-            <li key={bi.id} className="flex items-center justify-between px-4 py-3 text-sm">
-              <div>
-                <div className="font-medium">{bi.item?.name ?? "?"}</div>
-                <div className="text-xs text-muted-foreground">
-                   {formatTanggal(bi.booking?.startDate)} s.d. {formatTanggal(bi.booking?.endDate)}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">{bi.booking?.status}</Badge>
-                <span className="text-muted-foreground">{formatRupiah(bi.subtotal)}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {bis.length === 0 ? (
+          <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+            Belum ada penyewaan.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-muted-foreground">
+                  <th className="px-4 py-2">Tgl</th>
+                  <th className="px-4 py-2">Barang</th>
+                  <th className="px-4 py-2 text-right">Harga</th>
+                  <th className="px-4 py-2 text-right">Bagi Hasil</th>
+                  <th className="px-4 py-2 text-center">Lunas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bis.map((bi) => {
+                  const sub = Number(bi.subtotal || 0);
+                  const pct = Number(bi.item?.profitSharePct || 0);
+                  const share = (sub * pct) / 100;
+                  return (
+                    <tr key={bi.id} className="border-b border-border/60">
+                      <td className="px-4 py-2 text-muted-foreground">
+                        {formatTanggal(bi.booking?.startDate)}
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="font-medium">{bi.item?.name ?? "?"}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {bi.booking?.status}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 text-right">{formatRupiah(bi.subtotal)}</td>
+                      <td className="px-4 py-2 text-right text-forest-deep">
+                        {formatRupiah(String(Math.round(share)))}
+                        <span className="text-xs text-muted-foreground"> ({pct}%)</span>
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <PaidCheckbox id={bi.id} checked={!!bi.consignorPaid} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-border font-medium">
+                  <td className="px-4 py-2" colSpan={2}>
+                    Total
+                  </td>
+                  <td className="px-4 py-2 text-right">{formatRupiah(String(totalRevenue))}</td>
+                  <td className="px-4 py-2 text-right">
+                    {formatRupiah(String(Math.round(totalShare)))}
+                  </td>
+                  <td className="px-4 py-2 text-center text-xs text-muted-foreground">
+                    {formatRupiah(String(Math.round(unpaidShare)))} blm
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-muted-foreground">
         Login consignor demo: <span className="font-medium">consignor@yourstory.kp</span> /{" "}
-        <span className="font-medium">consignor1234</span>. Pencatatan & transfer bagi
-        hasil dilakukan manual di app lain.
+        <span className="font-medium">consignor1234</span>. Centang kolom "Lunas" bila
+        bagi hasil sudah dibayarkan ke pemilik titipan.
       </p>
     </div>
   );
