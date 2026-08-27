@@ -23,7 +23,7 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
     setError("");
     setPending(true);
     const fd = new FormData(e.currentTarget);
-    const res = await signIn(
+    const res = (await signIn(
       "credentials",
       {
         email: fd.get("email") as string,
@@ -31,7 +31,7 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
         role,
       },
       { redirect: false },
-    );
+    )) as { error?: string | null; ok?: boolean } | undefined;
     setPending(false);
     if (res?.error) {
       setError("Email atau password salah.");
