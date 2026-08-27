@@ -43,7 +43,7 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
       <div className="mb-7 flex flex-col items-center text-center">
         <Logo className="mb-4" />
         <h1 className="font-heading text-2xl font-semibold text-forest-deep">
-          Masuk ke yourstory.kp
+          {isAdmin ? "Masuk Admin" : "Masuk Pemilik Titipan"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {isAdmin
