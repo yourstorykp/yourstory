@@ -3,7 +3,9 @@ import { customers } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { toggleBlacklistAction } from "../actions";
+import { deleteCustomerAction } from "../actions";
+import { Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -57,11 +59,16 @@ export default async function CustomersPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <form action={toggleBlacklistAction.bind(null, c.id)}>
-                      <Button type="submit" size="sm" variant="outline">
-                        {c.blacklist ? "Buka Blokir" : "Blacklist"}
+                    <div className="flex items-center justify-end gap-2">
+                      <Button render={<Link href={`/admin/customers/${c.id}/edit`} />} size="icon" variant="outline" className="h-8 w-8 text-forest">
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                    </form>
+                      <form action={deleteCustomerAction.bind(null, c.id)}>
+                        <Button type="submit" size="icon" variant="outline" className="h-8 w-8 text-destructive">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               ))}

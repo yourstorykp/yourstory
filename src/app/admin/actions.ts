@@ -328,3 +328,29 @@ export async function toggleBlacklistAction(
   }
   revalidatePath("/admin/customers");
 }
+
+export async function deleteCustomerAction(id: number) {
+  try {
+    await db.delete(customers).where(eq(customers.id, id));
+  } catch (e) {
+    console.error("Gagal menghapus pelanggan, mungkin masih ada booking terkait.", e);
+  }
+  revalidatePath("/admin/customers");
+}
+
+export async function updateCustomerAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  const id = Number(fd.get("id"));
+  const name = parseText(fd.get("name"));
+  const contact = parseText(fd.get("contact"));
+  const email = parseText(fd.get("email"));
+  
+  if (!name || !contact) return { error: "Nama dan Kontak wajib diisi." };
+  
+  try {
+    await db.update(customers).set({ name, contact, email }).where(eq(customers.id, id));
+  } catch (e) {
+    return { error: "Gagal mengupdate pelanggan." };
+  }
+  revalidatePath("/admin/customers");
+  redirect("/admin/customers");
+}
