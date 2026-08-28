@@ -6,11 +6,12 @@ import { formatRupiah, formatTanggal } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { bookingDisplayCode } from "@/lib/booking";
+import { BookingCalendar } from "@/components/admin/booking-calendar";
 
 export const revalidate = 60; // Cache halaman selama 60 detik
 
 export default async function AdminDashboard() {
-  const [itemCount, catCount, consCount, s, revAgg, piuAgg, activeC, lateC, recent] =
+  const [itemCount, catCount, consCount, s, revAgg, piuAgg, activeC, lateC, recent, upcoming] =
     await Promise.all([
       db.select({ v: count() }).from(items),
       db.select({ v: count() }).from(categories),
@@ -29,11 +30,22 @@ export default async function AdminDashboard() {
         limit: 5,
         with: { customer: true },
       }),
+      db.query.bookings.findMany({
+        where: notInArray(bookings.status, ["cancelled", "completed", "returned"]),
+        with: { customer: true },
+      }),
     ]);
 
   const storeName = s[0]?.storeName ?? "yourstory.kp";
   const omzet = Number(revAgg[0]?.sum ?? 0);
   const piutang = Number(piuAgg[0]?.sum ?? 0);
+
+  const calendarData = upcoming.map(b => ({
+    id: b.id,
+    startDate: b.startDate,
+    code: bookingDisplayCode(b),
+    customerName: b.customer?.name ?? "?",
+  }));
 
   const kpis = [
     { label: "Total Barang", value: String(itemCount[0]?.v ?? 0) },
@@ -80,29 +92,33 @@ export default async function AdminDashboard() {
         </Button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card">
-        <div className="border-b border-border px-4 py-3">
-          <h2 className="font-heading text-lg font-semibold">Booking Terbaru</h2>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card flex flex-col">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="font-heading text-lg font-semibold">Booking Terbaru</h2>
+          </div>
+          <ul className="divide-y divide-border/60 flex-1">
+            {recent.length === 0 && (
+              <li className="px-4 py-8 text-center text-sm text-muted-foreground">
+                Belum ada booking.
+              </li>
+            )}
+            {recent.map((b) => (
+              <li key={b.id}>
+                <Link
+                  href={`/admin/bookings/${b.id}`}
+                  className="flex items-center justify-between gap-2 px-4 py-3 text-sm hover:bg-muted/50"
+                >
+                  <span className="font-medium text-forest-deep">{bookingDisplayCode(b)}</span>
+                  <span className="flex-1 truncate text-foreground">{b.customer?.name ?? "?"}</span>
+                  <span className="text-xs text-muted-foreground">{formatTanggal(b.startDate)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="divide-y divide-border/60">
-          {recent.length === 0 && (
-            <li className="px-4 py-8 text-center text-sm text-muted-foreground">
-              Belum ada booking.
-            </li>
-          )}
-          {recent.map((b) => (
-            <li key={b.id}>
-              <Link
-                href={`/admin/bookings/${b.id}`}
-                className="flex items-center justify-between gap-2 px-4 py-3 text-sm hover:bg-muted/50"
-              >
-                <span className="font-medium text-forest-deep">{bookingDisplayCode(b)}</span>
-                <span className="flex-1 truncate text-foreground">{b.customer?.name ?? "?"}</span>
-                <span className="text-xs text-muted-foreground">{formatTanggal(b.startDate)}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+
+        <BookingCalendar bookings={calendarData} />
       </div>
     </div>
   );
