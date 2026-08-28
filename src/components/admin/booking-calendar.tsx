@@ -129,8 +129,8 @@ export function BookingCalendar({ bookings }: { bookings: CalBooking[] }) {
                       <div className="font-medium">{b.code}</div>
                       <div className="text-xs text-muted-foreground">{b.customerName}</div>
                     </div>
-                    <Button asChild variant="secondary" size="sm" className="h-7 text-xs">
-                      <Link href={`/admin/bookings/${b.id}`}>Detail</Link>
+                    <Button render={<Link href={`/admin/bookings/${b.id}`} />} variant="secondary" size="sm" className="h-7 text-xs">
+                      Detail
                     </Button>
                   </li>
                 ))}
