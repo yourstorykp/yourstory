@@ -45,7 +45,20 @@ export default async function CustomersPage() {
               {rows.map((c) => (
                 <tr key={c.id} className="border-b border-border/60 last:border-0">
                   <td className="px-4 py-3 font-medium">{c.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.contact ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {c.contact ? (
+                      <a
+                        href={`https://wa.me/${c.contact.replace(/\D/g, "").replace(/^0/, "62")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-forest hover:underline"
+                      >
+                        {c.contact}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Button render={<Link href={`/admin/customers/${c.id}/edit`} />} size="icon" variant="outline" className="h-8 w-8 text-forest">
