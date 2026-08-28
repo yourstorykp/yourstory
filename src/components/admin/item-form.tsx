@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageUploader } from "./image-uploader";
 import type { ActionState } from "@/app/admin/actions";
 
 type Cat = { id: number; name: string };
@@ -70,6 +71,7 @@ export function ItemForm({
           <input type="hidden" name="satuanSewa" value={satuanSewa} />
           <input type="hidden" name="consignorId" value={consignorId} />
           {item?.id ? <input type="hidden" name="id" value={item.id} /> : null}
+          {item?.fotoUrl ? <input type="hidden" name="existingFotoUrl" value={item.fotoUrl} /> : null}
 
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="name">Nama Barang *</Label>
@@ -200,15 +202,8 @@ export function ItemForm({
             </div>
           )}
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="imageFile">Upload Foto (Maks 5MB)</Label>
-            <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
-            <p className="text-xs text-muted-foreground">Pilih file gambar untuk diunggah ke Cloudinary otomatis, atau gunakan URL manual di bawah.</p>
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="fotoUrl">URL Foto (Otomatis terganti jika upload)</Label>
-            <Input id="fotoUrl" name="fotoUrl" defaultValue={item?.fotoUrl ?? ""} placeholder="https://..." />
+          <div className="md:col-span-2">
+            <ImageUploader defaultPreview={item?.fotoUrl} />
           </div>
 
           <div className="space-y-2 md:col-span-2">

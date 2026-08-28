@@ -29,3 +29,10 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
     uploadStream.end(buffer);
   });
 }
+
+export async function uploadBase64ToCloudinary(base64String: string): Promise<string> {
+  const result = await cloudinary.uploader.upload(base64String, {
+    folder: "yourstory",
+  });
+  return result.secure_url;
+}

@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { items, categories, settings, customers, consignors, bookingItems } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
-import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { uploadBase64ToCloudinary } from "@/lib/cloudinary";
 
 export interface ActionState {
   error?: string;
@@ -21,11 +21,11 @@ export async function createItemAction(
   const name = parseText(formData.get("name"));
   if (!name) return { error: "Nama barang wajib diisi." };
 
-  let fotoUrl = parseText(formData.get("fotoUrl")) || null;
-  const imageFile = formData.get("imageFile") as File | null;
-  if (imageFile && imageFile.size > 0) {
+  let fotoUrl = null;
+  const imageBase64 = parseText(formData.get("imageFileBase64"));
+  if (imageBase64 && imageBase64.startsWith("data:image")) {
     try {
-      fotoUrl = await uploadImageToCloudinary(imageFile);
+      fotoUrl = await uploadBase64ToCloudinary(imageBase64);
     } catch (err) {
       return { error: "Gagal mengunggah gambar ke Cloudinary." };
     }
@@ -158,11 +158,11 @@ export async function updateItemAction(
   const name = parseText(formData.get("name"));
   if (!name) return { error: "Nama barang wajib diisi." };
 
-  let fotoUrl = parseText(formData.get("fotoUrl")) || null;
-  const imageFile = formData.get("imageFile") as File | null;
-  if (imageFile && imageFile.size > 0) {
+  let fotoUrl = parseText(formData.get("existingFotoUrl")) || null;
+  const imageBase64 = parseText(formData.get("imageFileBase64"));
+  if (imageBase64 && imageBase64.startsWith("data:image")) {
     try {
-      fotoUrl = await uploadImageToCloudinary(imageFile);
+      fotoUrl = await uploadBase64ToCloudinary(imageBase64);
     } catch (err) {
       return { error: "Gagal mengunggah gambar ke Cloudinary." };
     }
