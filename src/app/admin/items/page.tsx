@@ -32,9 +32,14 @@ export default async function ItemsPage() {
             Kelola barang, stok, dan kepemilikan (titipan).
           </p>
         </div>
-        <Button render={<Link href="/admin/items/new" />} className="bg-forest hover:bg-forest-deep">
-          + Tambah Barang
-        </Button>
+        <div className="flex gap-2">
+          <Button render={<Link href="/admin/categories" />} variant="outline">
+            + Tambah Kategori
+          </Button>
+          <Button render={<Link href="/admin/items/new" />} className="bg-forest hover:bg-forest-deep">
+            + Tambah Produk
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-xl border border-border bg-card">

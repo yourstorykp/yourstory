@@ -12,7 +12,6 @@ const links = [
   { href: "/admin/laporan", label: "Laporan" },
   { href: "/admin/riwayat", label: "Riwayat" },
   { href: "/admin/customers", label: "Pelanggan" },
-  { href: "/admin/categories", label: "Kategori" },
   { href: "/admin/settings", label: "Pengaturan" },
 ];
 
