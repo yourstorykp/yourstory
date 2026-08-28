@@ -131,10 +131,19 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01";
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: -50px;
+    bottom: -50px;
+    left: 0;
+    right: 0;
     background-image: url('/beautiful-view.jpg');
     background-size: cover;
-    background-attachment: fixed;
     background-position: center 80%;
+    z-index: -1;
+    pointer-events: none;
   }
   html {
     @apply font-sans;
