@@ -31,14 +31,13 @@ export default async function CustomersPage() {
               <tr className="border-b border-border text-left text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Nama</th>
                 <th className="px-4 py-3 font-medium">Kontak</th>
-                <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 text-right font-medium">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">
+                  <td colSpan={3} className="px-4 py-10 text-center text-muted-foreground">
                     Belum ada pelanggan.
                   </td>
                 </tr>
@@ -47,7 +46,6 @@ export default async function CustomersPage() {
                 <tr key={c.id} className="border-b border-border/60 last:border-0">
                   <td className="px-4 py-3 font-medium">{c.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{c.contact ?? "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.email ?? "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Button render={<Link href={`/admin/customers/${c.id}/edit`} />} size="icon" variant="outline" className="h-8 w-8 text-forest">
