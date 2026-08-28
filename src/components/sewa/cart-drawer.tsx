@@ -46,12 +46,12 @@ export function CartWidget() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-background p-4 sm:bottom-auto sm:right-4 sm:top-20 sm:max-w-md sm:rounded-2xl">
+          <div className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-2xl bg-background p-4 sm:max-w-md sm:rounded-2xl shadow-xl">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="font-heading text-lg font-semibold">Keranjang</h3>
               <button
