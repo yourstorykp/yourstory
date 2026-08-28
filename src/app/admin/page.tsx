@@ -65,13 +65,13 @@ export default async function AdminDashboard() {
         </h1>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {kpis.map((k) => (
           <Card key={k.label} className="border-border">
-            <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground">{k.label}</p>
+            <CardContent className="px-3 py-2">
+              <p className="text-[11px] text-muted-foreground truncate">{k.label}</p>
               <p
-                className={`font-heading text-2xl font-semibold ${k.danger ? "text-red-600" : "text-forest"}`}
+                className={`font-heading text-lg font-semibold ${k.danger ? "text-red-600" : "text-forest"}`}
               >
                 {k.value}
               </p>
@@ -92,33 +92,33 @@ export default async function AdminDashboard() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card flex flex-col">
-          <div className="border-b border-border px-4 py-3">
-            <h2 className="font-heading text-lg font-semibold">Booking Terbaru</h2>
-          </div>
-          <ul className="divide-y divide-border/60 flex-1">
-            {recent.length === 0 && (
-              <li className="px-4 py-8 text-center text-sm text-muted-foreground">
-                Belum ada booking.
-              </li>
-            )}
-            {recent.map((b) => (
-              <li key={b.id}>
-                <Link
-                  href={`/admin/bookings/${b.id}`}
-                  className="flex items-center justify-between gap-2 px-4 py-3 text-sm hover:bg-muted/50"
-                >
-                  <span className="font-medium text-forest-deep">{bookingDisplayCode(b)}</span>
-                  <span className="flex-1 truncate text-foreground">{b.customer?.name ?? "?"}</span>
-                  <span className="text-xs text-muted-foreground">{formatTanggal(b.startDate)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
+      <div className="mx-auto w-full max-w-2xl">
         <BookingCalendar bookings={calendarData} />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card flex flex-col">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="font-heading text-lg font-semibold">Booking Terbaru</h2>
+        </div>
+        <ul className="divide-y divide-border/60 flex-1">
+          {recent.length === 0 && (
+            <li className="px-4 py-8 text-center text-sm text-muted-foreground">
+              Belum ada booking.
+            </li>
+          )}
+          {recent.map((b) => (
+            <li key={b.id}>
+              <Link
+                href={`/admin/bookings/${b.id}`}
+                className="flex items-center justify-between gap-2 px-4 py-3 text-sm hover:bg-muted/50"
+              >
+                <span className="font-medium text-forest-deep">{bookingDisplayCode(b)}</span>
+                <span className="flex-1 truncate text-foreground">{b.customer?.name ?? "?"}</span>
+                <span className="text-xs text-muted-foreground">{formatTanggal(b.startDate)}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
