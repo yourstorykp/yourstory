@@ -7,6 +7,7 @@ import { AdminMobileBar } from "@/components/admin/mobile-bar";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { db } from "@/lib/db";
 import { settings } from "@/db/schema";
+import { MobileBackHandler } from "@/components/admin/mobile-back-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ export default async function AdminLayout({
 
   return (
     <div className="topo-bg flex min-h-screen flex-col">
+      <MobileBackHandler />
       <header className="border-b border-border bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <Link href="/admin">
