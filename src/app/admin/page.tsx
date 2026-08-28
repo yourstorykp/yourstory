@@ -24,6 +24,7 @@ export default async function AdminDashboard() {
       db.select({ v: count() }).from(bookings).where(eq(bookings.status, "active")),
       db.select({ v: count() }).from(bookings).where(eq(bookings.status, "late")),
       db.query.bookings.findMany({
+        where: eq(bookings.status, "booking"),
         orderBy: [desc(bookings.createdAt)],
         limit: 5,
         with: { customer: true },
@@ -90,22 +91,15 @@ export default async function AdminDashboard() {
             </li>
           )}
           {recent.map((b) => (
-            <li key={b.id} className="flex items-center justify-between px-4 py-3 text-sm">
-              <div>
-                <Link
-                  href={`/admin/bookings/${b.id}`}
-                  className="font-medium text-forest-deep hover:underline"
-                >
-                  {bookingDisplayCode(b)}
-                </Link>
-                <div className="text-xs text-muted-foreground">
-                   {b.customer?.name ?? "?"} · {formatTanggal(b.startDate)} s.d. {formatTanggal(b.endDate)}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">{formatRupiah(b.total)}</span>
-                <span className="text-xs text-muted-foreground">{b.status}</span>
-              </div>
+            <li key={b.id}>
+              <Link
+                href={`/admin/bookings/${b.id}`}
+                className="flex items-center justify-between gap-2 px-4 py-3 text-sm hover:bg-muted/50"
+              >
+                <span className="font-medium text-forest-deep">{bookingDisplayCode(b)}</span>
+                <span className="flex-1 truncate text-foreground">{b.customer?.name ?? "?"}</span>
+                <span className="text-xs text-muted-foreground">{formatTanggal(b.startDate)}</span>
+              </Link>
             </li>
           ))}
         </ul>

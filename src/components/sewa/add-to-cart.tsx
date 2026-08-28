@@ -17,44 +17,41 @@ export function AddToCartButton({
 }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  const max = Number(item.stokTotal) || 99;
 
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">Jumlah unit</span>
         <div className="flex items-center gap-1">
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="icon"
-            className="h-9 w-9"
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
             aria-label="Kurang"
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium hover:bg-muted"
           >
             −
-          </Button>
+          </button>
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
             min={1}
-            max={item.stokTotal}
+            max={max}
             value={qty}
-            onChange={(e) =>
-              setQty(
-                Math.max(1, Math.min(item.stokTotal, Number(e.target.value) || 1)),
-              )
-            }
+            onChange={(e) => {
+              const v = parseInt(e.target.value.replace(/\D/g, ""), 10);
+              setQty(Number.isFinite(v) ? Math.min(max, Math.max(1, v)) : 1);
+            }}
             className="h-9 w-16 rounded-lg border border-input bg-card px-2 text-center text-sm"
           />
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="icon"
-            className="h-9 w-9"
-            onClick={() => setQty((q) => Math.min(item.stokTotal, q + 1))}
             aria-label="Tambah"
+            onClick={() => setQty((q) => Math.min(max, q + 1))}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium hover:bg-muted"
           >
             +
-          </Button>
+          </button>
         </div>
       </div>
       <Button

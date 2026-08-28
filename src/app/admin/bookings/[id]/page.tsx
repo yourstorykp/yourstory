@@ -69,6 +69,17 @@ export default async function BookingDetailPage({
   const totalPaid = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
   const dpPct = b.total ? Math.round((Number(b.dpAmount) / Number(b.total)) * 100) : 0;
 
+  const waRaw = (b.customer?.contact ?? "").replace(/\D/g, "");
+  const waDigits = waRaw.startsWith("0") ? "62" + waRaw.slice(1) : waRaw;
+  const waMsg =
+    `hallo ${b.customer?.name ?? ""}\n` +
+    `pesanan kakak dengan kode booking ${bookingDisplayCode(b)} sudah kami konfirmasi ya kak, silahkan kakak melakukan pembayaran dp sebesar ${formatRupiah(b.dpAmount)}\n` +
+    `terimakasih atas pembayarannya, silahkan datang di toko kami untuk pengambilan unit dengan mengabari terlebih dahulu ya kak.\n` +
+    `salam`;
+  const waUrl = waDigits
+    ? `https://wa.me/${waDigits}?text=${encodeURIComponent(waMsg)}`
+    : "#";
+
   const isLate = b.status === "late";
   const isCancelled = b.status === "cancelled";
   let currentIdx = FLOW.findIndex((s) => s.key === b.status);
@@ -105,6 +116,13 @@ export default async function BookingDetailPage({
               Cetak Invoice
             </Button>
           </Link>
+          {waDigits && (
+            <a href={waUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm">
+                Kirim WA Konfirmasi DP
+              </Button>
+            </a>
+          )}
         </div>
       </div>
 

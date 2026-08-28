@@ -49,6 +49,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items]);
 
+  useEffect(() => {
+    const clearOnExit = () => {
+      try {
+        localStorage.removeItem(KEY);
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener("pagehide", clearOnExit);
+    window.addEventListener("beforeunload", clearOnExit);
+    return () => {
+      window.removeEventListener("pagehide", clearOnExit);
+      window.removeEventListener("beforeunload", clearOnExit);
+    };
+  }, []);
+
   const add: CartCtx["add"] = useCallback((it, qty = 1) => {
     setItems((prev) => {
       const ex = prev.find((p) => p.itemId === it.itemId);

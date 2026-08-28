@@ -43,6 +43,7 @@ export function BookingForm({
   const days = diffDays(startDate, endDate);
   const estTotal = days * qty * price;
   const estDp = Math.round((estTotal * dpPct) / 100);
+  const max = Number(item.stokTotal) || 99;
 
   if (state.success) {
     return (
@@ -110,36 +111,36 @@ export function BookingForm({
       <div className="space-y-2">
         <Label htmlFor="qty">Jumlah Unit</Label>
         <div className="flex items-center gap-1">
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="icon"
-            className="h-9 w-9 shrink-0"
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
             aria-label="Kurang"
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium hover:bg-muted"
           >
             −
-          </Button>
+          </button>
           <Input
             id="qty"
             name="qty"
-            type="number"
+            type="text"
+            inputMode="numeric"
             min={1}
-            max={item.stokTotal}
+            max={max}
             value={qty}
-            onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+            onChange={(e) => {
+              const v = parseInt(e.target.value.replace(/\D/g, ""), 10);
+              setQty(Number.isFinite(v) ? Math.min(max, Math.max(1, v)) : 1);
+            }}
             className="text-center"
           />
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="icon"
-            className="h-9 w-9 shrink-0"
-            onClick={() => setQty((q) => Math.min(item.stokTotal, q + 1))}
             aria-label="Tambah"
+            onClick={() => setQty((q) => Math.min(max, q + 1))}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium hover:bg-muted"
           >
             +
-          </Button>
+          </button>
         </div>
       </div>
 
