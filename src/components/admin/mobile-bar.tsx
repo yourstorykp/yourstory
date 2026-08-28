@@ -38,7 +38,7 @@ export function AdminMobileBar({ storeName }: { storeName: string }) {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute left-0 top-0 flex h-full w-64 max-w-[82%] flex-col bg-card p-4">
+          <div className="absolute right-0 top-0 flex h-full w-64 max-w-[82%] flex-col bg-card p-4">
             <div className="mb-4 flex items-center justify-between">
               <span className="text-sm font-medium">{storeName}</span>
               <button

@@ -35,15 +35,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { db } from "@/lib/db";
+import { settings } from "@/db/schema";
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const storeSettings = await db.select().from(settings).limit(1);
+  const bgUrl = storeSettings[0]?.backgroundUrl || "/beautiful-view.jpg";
+
   return (
     <html
       lang="id"
       className={`${outfit.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <style dangerouslySetInnerHTML={{ __html: `
+          body::before { background-image: url('${bgUrl}'); }
+        `}} />
         {children}
         <Toaster richColors position="top-center" />
         <PWARegister />

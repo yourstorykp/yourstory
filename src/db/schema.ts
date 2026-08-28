@@ -60,6 +60,7 @@ export const settings = pgTable("settings", {
   currency: text("currency").notNull().default("IDR"),
   defaultDpPct: numeric("default_dp_pct", { precision: 5, scale: 2 }).notNull().default("30"),
   lateFeeRule: text("late_fee_rule"),
+  backgroundUrl: text("background_url"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 

@@ -268,6 +268,17 @@ export async function updateSettingsAction(
   const currency = parseText(formData.get("currency")) || "IDR";
   const defaultDpPct = parseNum(formData.get("defaultDpPct"));
   const lateFeeRule = parseText(formData.get("lateFeeRule")) || null;
+  
+  let backgroundUrl = parseText(formData.get("existingBackgroundUrl")) || null;
+  const imageBase64 = parseText(formData.get("imageFileBase64"));
+  if (imageBase64 && imageBase64.startsWith("data:image")) {
+    try {
+      backgroundUrl = await uploadBase64ToCloudinary(imageBase64);
+    } catch (err) {
+      return { error: "Gagal mengunggah gambar background ke Cloudinary." };
+    }
+  }
+
   try {
     const existing = await db.select().from(settings).limit(1);
     if (existing.length === 0) {
@@ -276,11 +287,12 @@ export async function updateSettingsAction(
         currency,
         defaultDpPct,
         lateFeeRule,
+        backgroundUrl,
       });
     } else {
       await db
         .update(settings)
-        .set({ storeName, currency, defaultDpPct, lateFeeRule, updatedAt: new Date() })
+        .set({ storeName, currency, defaultDpPct, lateFeeRule, backgroundUrl, updatedAt: new Date() })
         .where(eq(settings.id, existing[0].id));
     }
   } catch (e) {
@@ -288,6 +300,7 @@ export async function updateSettingsAction(
   }
   revalidatePath("/admin/settings");
   revalidatePath("/admin");
+  revalidatePath("/");
   return { success: true };
 }
 

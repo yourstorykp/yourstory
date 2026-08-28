@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageUploader } from "./image-uploader";
 import type { ActionState } from "@/app/admin/actions";
 
 type SetLike = {
@@ -13,6 +14,7 @@ type SetLike = {
   currency?: string;
   defaultDpPct?: string | number;
   lateFeeRule?: string | null;
+  backgroundUrl?: string | null;
 };
 
 export function SettingsForm({
@@ -59,6 +61,12 @@ export function SettingsForm({
               defaultValue={settings?.lateFeeRule ?? ""}
               placeholder="Mis. 10% dari harga sewa per hari keterlambatan"
             />
+          </div>
+          
+          <div className="space-y-2 border-t border-border pt-4 mt-4">
+            <Label>Background Aplikasi (Semua Halaman)</Label>
+            <input type="hidden" name="existingBackgroundUrl" value={settings?.backgroundUrl ?? ""} />
+            <ImageUploader defaultPreview={settings?.backgroundUrl} />
           </div>
           {state.error && <p className="text-sm text-destructive">{state.error}</p>}
           {state.success && <p className="text-sm text-forest">Tersimpan.</p>}
