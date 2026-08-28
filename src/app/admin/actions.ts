@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { items, categories, settings, customers, consignors, bookingItems } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 
 export interface ActionState {
   error?: string;
@@ -19,6 +20,16 @@ export async function createItemAction(
 ): Promise<ActionState> {
   const name = parseText(formData.get("name"));
   if (!name) return { error: "Nama barang wajib diisi." };
+
+  let fotoUrl = parseText(formData.get("fotoUrl")) || null;
+  const imageFile = formData.get("imageFile") as File | null;
+  if (imageFile && imageFile.size > 0) {
+    try {
+      fotoUrl = await uploadImageToCloudinary(imageFile);
+    } catch (err) {
+      return { error: "Gagal mengunggah gambar ke Cloudinary." };
+    }
+  }
 
   try {
     await db.insert(items).values({
@@ -35,7 +46,7 @@ export async function createItemAction(
         ? Number(formData.get("consignorId"))
         : null,
       profitSharePct: parseNum(formData.get("profitSharePct")),
-      fotoUrl: parseText(formData.get("fotoUrl")) || null,
+      fotoUrl,
       notes: parseText(formData.get("notes")) || null,
     });
   } catch (e) {
@@ -146,6 +157,17 @@ export async function updateItemAction(
   const id = Number(formData.get("id"));
   const name = parseText(formData.get("name"));
   if (!name) return { error: "Nama barang wajib diisi." };
+
+  let fotoUrl = parseText(formData.get("fotoUrl")) || null;
+  const imageFile = formData.get("imageFile") as File | null;
+  if (imageFile && imageFile.size > 0) {
+    try {
+      fotoUrl = await uploadImageToCloudinary(imageFile);
+    } catch (err) {
+      return { error: "Gagal mengunggah gambar ke Cloudinary." };
+    }
+  }
+
   try {
     await db
       .update(items)
@@ -163,7 +185,7 @@ export async function updateItemAction(
           ? Number(formData.get("consignorId"))
           : null,
         profitSharePct: parseNum(formData.get("profitSharePct")),
-        fotoUrl: parseText(formData.get("fotoUrl")) || null,
+        fotoUrl,
         notes: parseText(formData.get("notes")) || null,
         updatedAt: new Date(),
       })

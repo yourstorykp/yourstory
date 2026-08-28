@@ -64,7 +64,7 @@ export function ItemForm({
       </CardHeader>
       <CardContent>
         {/* Hidden inputs menjamin nilai select terkirim ke server action */}
-        <form action={formAction} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form action={formAction} encType="multipart/form-data" className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <input type="hidden" name="ownerType" value={ownerType} />
           <input type="hidden" name="categoryId" value={categoryId} />
           <input type="hidden" name="satuanSewa" value={satuanSewa} />
@@ -201,7 +201,13 @@ export function ItemForm({
           )}
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="fotoUrl">URL Foto</Label>
+            <Label htmlFor="imageFile">Upload Foto (Maks 5MB)</Label>
+            <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
+            <p className="text-xs text-muted-foreground">Pilih file gambar untuk diunggah ke Cloudinary otomatis, atau gunakan URL manual di bawah.</p>
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="fotoUrl">URL Foto (Otomatis terganti jika upload)</Label>
             <Input id="fotoUrl" name="fotoUrl" defaultValue={item?.fotoUrl ?? ""} placeholder="https://..." />
           </div>
 
