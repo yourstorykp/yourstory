@@ -7,8 +7,7 @@ import { eq } from "drizzle-orm";
 import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/format";
 import { getItemAvailability } from "@/lib/availability";
-import { BookingModal } from "@/components/sewa/booking-modal";
-import { AddToCartButton } from "@/components/sewa/add-to-cart";
+import { ProductActions } from "@/components/sewa/product-actions";
 
 export const revalidate = 120;
 
@@ -133,7 +132,7 @@ export default async function ItemDetailPage({
               Pilih tanggal sewa dan jumlah unit, lalu tim kami akan konfirmasi
               ketersediaan & pembayaran via WhatsApp.
             </p>
-              <AddToCartButton
+              <ProductActions
                 item={{
                   id: item.id,
                   name: item.name,
@@ -141,14 +140,6 @@ export default async function ItemDetailPage({
                   stokTotal: item.stokTotal,
                   satuanSewa: item.satuanSewa,
                   fotoUrl: item.fotoUrl,
-                }}
-              />
-              <BookingModal
-                item={{
-                  id: item.id,
-                  hargaSewa: item.hargaSewa,
-                  stokTotal: item.stokTotal,
-                  satuanSewa: item.satuanSewa,
                 }}
                 dpPct={dpPct}
               />

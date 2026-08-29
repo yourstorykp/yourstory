@@ -7,6 +7,7 @@ import { BookingForm } from "@/components/sewa/booking-form";
 export function BookingModal({
   item,
   dpPct,
+  initialQty = 1,
 }: {
   item: {
     id: number;
@@ -15,6 +16,7 @@ export function BookingModal({
     satuanSewa: string;
   };
   dpPct: number;
+  initialQty?: number;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -56,7 +58,7 @@ export function BookingModal({
                 ✕
               </button>
             </div>
-            <BookingForm item={item} dpPct={dpPct} />
+            <BookingForm item={item} dpPct={dpPct} initialQty={initialQty} />
           </div>
         </div>
       )}

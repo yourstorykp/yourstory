@@ -22,6 +22,7 @@ function satuanLabel(s: string) {
 export function BookingForm({
   item,
   dpPct,
+  initialQty = 1,
 }: {
   item: {
     id: number;
@@ -30,6 +31,7 @@ export function BookingForm({
     satuanSewa: string;
   };
   dpPct: number;
+  initialQty?: number;
 }) {
   const [state, formAction] = useActionState<BookingState, FormData>(
     createBookingAction,
@@ -37,7 +39,7 @@ export function BookingForm({
   );
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(initialQty);
 
   const price = Number(item.hargaSewa) || 0;
   const days = diffDays(startDate, endDate);
