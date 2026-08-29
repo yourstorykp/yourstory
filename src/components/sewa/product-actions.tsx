@@ -32,7 +32,7 @@ export function ProductActions({
             type="button"
             aria-label="Kurang"
             onClick={() => setQty((q) => Math.max(1, q - 1))}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium hover:bg-muted transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium transition-transform hover:bg-muted active:scale-90 active:bg-border select-none"
           >
             −
           </button>
@@ -40,19 +40,18 @@ export function ProductActions({
             type="text"
             inputMode="numeric"
             min={1}
-            max={max}
             value={qty}
             onChange={(e) => {
               const v = parseInt(e.target.value.replace(/\D/g, ""), 10);
-              setQty(Number.isFinite(v) ? Math.min(max, Math.max(1, v)) : 1);
+              setQty(Number.isFinite(v) ? Math.max(1, v) : 1);
             }}
             className="h-9 w-16 rounded-lg border border-input bg-card px-2 text-center text-sm font-semibold shadow-inner"
           />
           <button
             type="button"
             aria-label="Tambah"
-            onClick={() => setQty((q) => Math.min(max, q + 1))}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium hover:bg-muted transition-colors"
+            onClick={() => setQty((q) => q + 1)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-lg font-medium transition-transform hover:bg-muted active:scale-90 active:bg-border select-none"
           >
             +
           </button>
