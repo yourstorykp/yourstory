@@ -17,7 +17,7 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
   const isAdmin = role === "admin";
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-border bg-card/95 p-9 shadow-xl backdrop-blur">
+    <div className="w-full max-w-md rounded-2xl border border-border bg-card p-9 shadow-xl">
       <div className="mb-7 flex flex-col items-center text-center">
         <Logo className="mb-4" />
         <h1 className="font-heading text-2xl font-semibold text-forest-deep">

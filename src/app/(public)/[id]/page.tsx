@@ -83,7 +83,7 @@ export default async function ItemDetailPage({
 
         {/* Info + form */}
         <div className="space-y-4">
-          <div className="space-y-4 rounded-xl border border-border bg-card/95 p-5 backdrop-blur shadow-sm">
+          <div className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-sm">
             <div>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="bg-terracotta/15 text-terracotta-deep">
