@@ -112,7 +112,7 @@ export default async function ItemDetailPage({
 
             <div className="flex flex-wrap gap-2 text-xs">
               <span className="rounded-full bg-muted px-3 py-1">
-                Stok tersedia: {item.stokTotal}
+                Stok: {item.stokTotal}
               </span>
                 {upcoming.length > 0 ? (
                   <span className="rounded-full bg-terracotta/15 px-3 py-1 text-terracotta-deep">
