@@ -32,7 +32,7 @@ export function CustomerEditForm({ customer }: { customer: Customer }) {
           
           <div className="space-y-2">
             <Label htmlFor="contact">Nomor WhatsApp / Kontak</Label>
-            <Input id="contact" name="contact" defaultValue={customer.contact} required />
+            <Input id="contact" name="contact" defaultValue={customer.contact ?? ""} required />
           </div>
           
           <div className="space-y-2">
