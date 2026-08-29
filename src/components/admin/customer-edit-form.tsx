@@ -8,7 +8,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { updateCustomerAction } from "@/app/admin/actions";
 import Link from "next/link";
 
-export function CustomerEditForm({ customer }: { customer: any }) {
+type Customer = {
+  id: number;
+  name: string;
+  contact: string | null;
+  email: string | null;
+  blacklist: boolean;
+};
+
+export function CustomerEditForm({ customer }: { customer: Customer }) {
   const [state, formAction] = useActionState(updateCustomerAction, {});
 
   return (

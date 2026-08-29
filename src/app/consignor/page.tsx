@@ -164,7 +164,7 @@ export default async function ConsignorDashboard() {
 
       <p className="text-xs text-muted-foreground">
         Login consignor demo: <span className="font-medium">consignor@yourstory.kp</span> /{" "}
-        <span className="font-medium">consignor1234</span>. Centang kolom "Lunas" bila
+        <span className="font-medium">consignor1234</span>. Centang kolom &quot;Lunas&quot; bila
         bagi hasil sudah dibayarkan ke pemilik titipan.
       </p>
     </div>

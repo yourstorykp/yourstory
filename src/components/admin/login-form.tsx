@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -74,16 +75,16 @@ export function LoginForm({ role }: { role: "admin" | "consignor" }) {
         {isAdmin ? (
           <>
             Pemilik titipan?{" "}
-            <a href="/login/consignor" className="font-medium text-terracotta hover:underline">
+            <Link href="/login/consignor" className="font-medium text-terracotta hover:underline">
               Masuk di sini
-            </a>
+            </Link>
           </>
         ) : (
           <>
             Admin?{" "}
-            <a href="/login/admin" className="font-medium text-terracotta hover:underline">
+            <Link href="/login/admin" className="font-medium text-terracotta hover:underline">
               Masuk di sini
-            </a>
+            </Link>
           </>
         )}
       </p>
