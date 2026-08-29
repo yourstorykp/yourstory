@@ -22,32 +22,41 @@ export function AddToCartButton({
   const max = Number(item.stokTotal) || 99;
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const [animations, setAnimations] = useState<{ id: number, x: number, y: number }[]>([]);
+  const [animations, setAnimations] = useState<{ id: number, sx: number, sy: number, sw: number, sh: number, ex: number, ey: number }[]>([]);
   const animCounter = useRef(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   const handleAdd = (e: React.MouseEvent) => {
-    // 1. Dapatkan posisi awal
-    let startX = e.clientX;
-    let startY = e.clientY;
+    let sx = e.clientX;
+    let sy = e.clientY;
+    let sw = 100;
+    let sh = 100;
     
-    // Jika bisa dapat posisi foto utama, pakai itu. 
-    // Tapi karena komponen foto ada di bagian luar, kita asumsikan posisi klik sebagai awalnya
-    // atau posisi tengah layar.
+    // Cari elemen foto secara fleksibel
     const imgEl = document.querySelector('img[alt="' + item.name + '"]');
     if (imgEl) {
       const rect = imgEl.getBoundingClientRect();
-      startX = rect.left + rect.width / 2;
-      startY = rect.top + rect.height / 2;
+      sx = rect.left;
+      sy = rect.top;
+      sw = rect.width;
+      sh = rect.height;
     }
 
-    // 2. Tambahkan animasi
-    const id = animCounter.current++;
-    setAnimations(prev => [...prev, { id, x: startX, y: startY }]);
+    let ex = window.innerWidth - 60;
+    let ey = window.innerHeight - 60;
+    // Cari tombol keranjang secara dinamis
+    const cartEl = document.getElementById("cart-widget-btn");
+    if (cartEl) {
+      const cartRect = cartEl.getBoundingClientRect();
+      ex = cartRect.left;
+      ey = cartRect.top;
+    }
 
-    // 3. Tambahkan ke keranjang setelah delay agar pas dengan animasi sampai
+    const id = animCounter.current++;
+    setAnimations(prev => [...prev, { id, sx, sy, sw, sh, ex, ey }]);
+
     setTimeout(() => {
       add(
         {
@@ -59,9 +68,8 @@ export function AddToCartButton({
         },
         qty,
       );
-    }, 1300); // 1.3 detik dari 1.5 detik total animasi (biar pas landing langsung nambah)
+    }, 1300);
 
-    // 4. Hapus animasi setelah selesai
     setTimeout(() => {
       setAnimations(prev => prev.filter(a => a.id !== id));
     }, 1500);
@@ -119,8 +127,13 @@ export function AddToCartButton({
               key={anim.id}
               className="fixed z-[100] pointer-events-none animate-fly-cart overflow-hidden rounded-xl bg-card border-2 border-forest shadow-2xl"
               style={{
-                '--start-x': `${anim.x}px`,
-                '--start-y': `${anim.y}px`,
+                '--start-x': `${anim.sx}px`,
+                '--start-y': `${anim.sy}px`,
+                '--start-w': `${anim.sw}px`,
+                '--start-h': `${anim.sh}px`,
+                '--end-x': `${anim.ex}px`,
+                '--end-y': `${anim.ey}px`,
+                transformOrigin: 'top left',
               } as React.CSSProperties}
             >
               {item.fotoUrl ? (

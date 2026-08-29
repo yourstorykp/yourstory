@@ -32,14 +32,15 @@ export function CartWidget() {
   return (
     <>
       <button
+        id="cart-widget-btn"
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-forest text-cream shadow-lg"
+        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-forest text-cream shadow-lg transition-transform hover:scale-105"
         aria-label="Buka keranjang"
       >
         <CartIcon />
         {count > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1 text-xs font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-terracotta text-[10px] font-bold text-white shadow-sm ring-2 ring-background">
             {count}
           </span>
         )}

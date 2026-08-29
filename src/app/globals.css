@@ -158,31 +158,36 @@
   background-size: 22px 22px;
 }
 
-@keyframes fly-cart {
+@keyframes fly-cart-dynamic {
   0% {
     top: var(--start-y);
     left: var(--start-x);
-    width: 300px;
-    height: 300px;
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    width: var(--start-w);
+    height: var(--start-h);
     opacity: 1;
     border-radius: 12px;
+    transform: scale(1) rotate(0deg);
   }
-  20% {
-    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+  40% {
+    top: var(--start-y);
+    left: var(--start-x);
+    width: 48px;
+    height: 48px;
     opacity: 1;
+    border-radius: 50%;
+    transform: scale(1) rotate(5deg);
   }
   100% {
-    top: calc(100vh - 40px);
-    left: calc(100vw - 40px);
-    width: 300px;
-    height: 300px;
-    transform: translate(-50%, -50%) scale(0.1) rotate(-15deg);
-    opacity: 0.5;
+    top: var(--end-y);
+    left: var(--end-x);
+    width: 48px;
+    height: 48px;
+    opacity: 0.2;
     border-radius: 50%;
+    transform: scale(0.5) rotate(-15deg);
   }
 }
 
 .animate-fly-cart {
-  animation: fly-cart 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: fly-cart-dynamic 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
