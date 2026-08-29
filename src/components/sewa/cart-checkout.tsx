@@ -20,7 +20,7 @@ function diffDays(a: string, b: string) {
 }
 
 export function CartCheckout() {
-  const { items, clear } = useCart();
+  const { items, clear, setQty, remove } = useCart();
   const [state, formAction] = useActionState<BookingState, FormData>(
     createCartBookingAction,
     {},
@@ -97,15 +97,57 @@ export function CartCheckout() {
         <h2 className="mb-2 font-heading text-lg font-semibold">
           Barang ({items.length})
         </h2>
-        <ul className="space-y-1 text-sm">
+        <ul className="space-y-0 text-sm">
           {items.map((it) => (
-            <li key={it.itemId} className="flex justify-between border-b border-border/60 pb-1 last:border-0">
-              <span className="truncate">
-                {it.name} ×{it.qty}
-              </span>
-              <span className="text-muted-foreground">
-                {formatRupiah(Number(it.hargaSewa) * it.qty)}
-              </span>
+            <li key={it.itemId} className="flex flex-col gap-2 border-b border-border/60 py-3 first:pt-1 last:border-0 last:pb-1">
+              <div className="flex justify-between">
+                <span className="truncate font-medium">{it.name}</span>
+                <span className="text-muted-foreground">
+                  {formatRupiah(Number(it.hargaSewa) * it.qty)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Kurang"
+                    onClick={() => setQty(it.itemId, Math.max(1, it.qty - 1))}
+                    disabled={it.qty <= 1}
+                    className="flex h-7 w-7 items-center justify-center rounded-md border border-input bg-background text-sm font-medium transition-transform hover:bg-muted active:scale-90 active:bg-border select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    min={1}
+                    max={it.stokTotal || 99}
+                    value={it.qty}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value.replace(/\D/g, ""), 10);
+                      const max = Number(it.stokTotal) || 99;
+                      setQty(it.itemId, Number.isFinite(v) ? Math.min(max, Math.max(1, v)) : 1);
+                    }}
+                    className="h-7 w-10 rounded-md border border-input bg-card px-1 text-center text-xs font-semibold shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    aria-label="Tambah"
+                    onClick={() => setQty(it.itemId, Math.min(Number(it.stokTotal) || 99, it.qty + 1))}
+                    disabled={it.qty >= (Number(it.stokTotal) || 99)}
+                    className="flex h-7 w-7 items-center justify-center rounded-md border border-input bg-background text-sm font-medium transition-transform hover:bg-muted active:scale-90 active:bg-border select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => remove(it.itemId)}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Hapus
+                </button>
+              </div>
             </li>
           ))}
         </ul>

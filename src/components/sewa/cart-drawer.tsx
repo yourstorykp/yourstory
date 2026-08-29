@@ -85,16 +85,39 @@ export function CartWidget() {
                           {formatRupiah(it.hargaSewa)}/{it.satuanSewa}
                         </div>
                       </div>
-                      <input
-                        type="number"
-                        min={1}
-                        max={it.stokTotal}
-                        value={it.qty}
-                        onChange={(e) =>
-                          setQty(it.itemId, Number(e.target.value) || 1)
-                        }
-                        className="h-8 w-14 rounded-lg border border-input bg-card px-2 text-sm"
-                      />
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          aria-label="Kurang"
+                          onClick={() => setQty(it.itemId, Math.max(1, it.qty - 1))}
+                          disabled={it.qty <= 1}
+                          className="flex h-7 w-7 items-center justify-center rounded-md border border-input bg-background text-sm font-medium transition-transform hover:bg-muted active:scale-90 active:bg-border select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                        >
+                          −
+                        </button>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          min={1}
+                          max={it.stokTotal || 99}
+                          value={it.qty}
+                          onChange={(e) => {
+                            const v = parseInt(e.target.value.replace(/\D/g, ""), 10);
+                            const max = Number(it.stokTotal) || 99;
+                            setQty(it.itemId, Number.isFinite(v) ? Math.min(max, Math.max(1, v)) : 1);
+                          }}
+                          className="h-7 w-10 rounded-md border border-input bg-card px-1 text-center text-xs font-semibold shadow-inner"
+                        />
+                        <button
+                          type="button"
+                          aria-label="Tambah"
+                          onClick={() => setQty(it.itemId, Math.min(Number(it.stokTotal) || 99, it.qty + 1))}
+                          disabled={it.qty >= (Number(it.stokTotal) || 99)}
+                          className="flex h-7 w-7 items-center justify-center rounded-md border border-input bg-background text-sm font-medium transition-transform hover:bg-muted active:scale-90 active:bg-border select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                        >
+                          +
+                        </button>
+                      </div>
                       <button
                         type="button"
                         onClick={() => remove(it.itemId)}
