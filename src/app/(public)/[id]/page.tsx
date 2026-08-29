@@ -83,51 +83,53 @@ export default async function ItemDetailPage({
 
         {/* Info + form */}
         <div className="space-y-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-terracotta/15 text-terracotta-deep">
-                {item.category?.name ?? "Tanpa kategori"}
-              </Badge>
+          <div className="space-y-4 rounded-xl border border-border bg-card/95 p-5 backdrop-blur shadow-sm">
+            <div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-terracotta/15 text-terracotta-deep">
+                  {item.category?.name ?? "Tanpa kategori"}
+                </Badge>
+              </div>
+              <h1 className="mt-2 font-heading text-2xl font-semibold text-forest-deep">
+                {item.name}
+              </h1>
+              <p className="mt-1 text-muted-foreground">{item.sku ? `SKU ${item.sku}` : "—"}</p>
             </div>
-            <h1 className="mt-2 font-heading text-2xl font-semibold text-forest-deep">
-              {item.name}
-            </h1>
-            <p className="mt-1 text-muted-foreground">{item.sku ? `SKU ${item.sku}` : "—"}</p>
-          </div>
 
-          <div className="text-2xl font-semibold text-forest-deep">
-            {formatRupiah(item.hargaSewa)}
-            <span className="text-sm font-normal text-muted-foreground">
-              /{satuanLabel(item.satuanSewa)}
-            </span>
-          </div>
+            <div className="text-2xl font-semibold text-forest-deep">
+              {formatRupiah(item.hargaSewa)}
+              <span className="text-sm font-normal text-muted-foreground">
+                /{satuanLabel(item.satuanSewa)}
+              </span>
+            </div>
 
-          <p className="text-sm text-muted-foreground">{item.description ?? "Belum ada deskripsi."}</p>
-          {upcoming.length > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Sudah terbooking:{" "}
-              {upcoming.map((r) => `${r.start}–${r.end}`).join(" · ")}
-            </p>
-          )}
+            <p className="text-sm text-muted-foreground">{item.description ?? "Belum ada deskripsi."}</p>
+            {upcoming.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Sudah terbooking:{" "}
+                {upcoming.map((r) => `${r.start}–${r.end}`).join(" · ")}
+              </p>
+            )}
 
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-muted px-3 py-1">
-              Stok tersedia: {item.stokTotal}
-            </span>
-              {item.maintenanceDays > 0 && (
-                <span className="rounded-full bg-muted px-3 py-1">
-                  Maintenance: {item.maintenanceDays} hri
-                </span>
-              )}
-              {upcoming.length > 0 ? (
-                <span className="rounded-full bg-terracotta/15 px-3 py-1 text-terracotta-deep">
-                  {upcoming.length} periode terbooking
-                </span>
-              ) : (
-                <span className="rounded-full bg-forest/15 px-3 py-1 text-forest-deep">
-                  Tersedia
-                </span>
-              )}
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-muted px-3 py-1">
+                Stok tersedia: {item.stokTotal}
+              </span>
+                {item.maintenanceDays > 0 && (
+                  <span className="rounded-full bg-muted px-3 py-1">
+                    Maintenance: {item.maintenanceDays} hri
+                  </span>
+                )}
+                {upcoming.length > 0 ? (
+                  <span className="rounded-full bg-terracotta/15 px-3 py-1 text-terracotta-deep">
+                    {upcoming.length} periode terbooking
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-forest/15 px-3 py-1 text-forest-deep">
+                    Tersedia
+                  </span>
+                )}
+            </div>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4">
