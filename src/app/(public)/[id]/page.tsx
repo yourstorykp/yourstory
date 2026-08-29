@@ -140,6 +140,7 @@ export default async function ItemDetailPage({
                   hargaSewa: item.hargaSewa,
                   stokTotal: item.stokTotal,
                   satuanSewa: item.satuanSewa,
+                  fotoUrl: item.fotoUrl,
                 }}
               />
               <BookingModal
