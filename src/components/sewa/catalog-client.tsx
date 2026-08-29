@@ -147,6 +147,8 @@ export function CatalogClient({
                       stokTotal: it.stokTotal,
                     },
                     1,
+                    e,
+                    it.fotoUrl
                   );
                 }}
                 className="absolute right-2 top-2 rounded-full bg-forest px-2 py-1 text-xs font-medium text-cream shadow hover:bg-forest-deep"
