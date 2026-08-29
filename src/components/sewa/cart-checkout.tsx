@@ -93,8 +93,8 @@ export function CartCheckout() {
         </Fragment>
       ))}
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="mb-2 font-heading text-lg font-semibold">
+      <div className="mb-6">
+        <h2 className="mb-2 font-heading text-lg font-semibold border-b border-border/50 pb-2">
           Barang ({items.length})
         </h2>
         <ul className="space-y-0 text-sm">
