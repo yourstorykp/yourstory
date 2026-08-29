@@ -135,10 +135,10 @@
   body::before {
     content: "";
     position: fixed;
-    top: -50px;
-    bottom: -50px;
-    left: 0;
-    right: 0;
+    top: -10%;
+    left: -10%;
+    width: 120vw;
+    height: 120lvh; /* prevents resize jumps on mobile */
     background-size: cover;
     background-position: center 80%;
     z-index: -1;
