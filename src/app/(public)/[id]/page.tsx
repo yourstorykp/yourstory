@@ -115,11 +115,6 @@ export default async function ItemDetailPage({
               <span className="rounded-full bg-muted px-3 py-1">
                 Stok tersedia: {item.stokTotal}
               </span>
-                {item.maintenanceDays > 0 && (
-                  <span className="rounded-full bg-muted px-3 py-1">
-                    Maintenance: {item.maintenanceDays} hri
-                  </span>
-                )}
                 {upcoming.length > 0 ? (
                   <span className="rounded-full bg-terracotta/15 px-3 py-1 text-terracotta-deep">
                     {upcoming.length} periode terbooking
