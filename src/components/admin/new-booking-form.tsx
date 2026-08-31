@@ -14,6 +14,7 @@ type ItemOption = {
   hargaSewa: number | string;
   stokTotal: number;
   satuanSewa: string;
+  fotoUrl?: string | null;
 };
 
 type CustOption = { id: number; name: string; contact: string | null };
@@ -40,7 +41,7 @@ function ItemCombobox({
     <div className="relative min-w-0 flex-1">
       <input
         value={q}
-        placeholder="Ketik nama barang…"
+        placeholder="Ketik nama barang (Search)..."
         className={field}
         onChange={(e) => {
           setQ(e.target.value);
@@ -61,7 +62,7 @@ function ItemCombobox({
               <li key={it.id}>
                 <button
                   type="button"
-                  className="block w-full px-3 py-2 text-left text-sm hover:bg-secondary"
+                  className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-secondary"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     setQ(it.name);
@@ -69,11 +70,25 @@ function ItemCombobox({
                     setOpen(false);
                   }}
                 >
-                  {it.name}{" "}
-                  <span className="text-muted-foreground">
-                    — {formatRupiah(it.hargaSewa)}/{it.satuanSewa} (stok{" "}
-                    {it.stokTotal})
-                  </span>
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
+                    {it.fotoUrl ? (
+                      <img
+                        src={it.fotoUrl}
+                        alt={it.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground">
+                        No Pic
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="truncate text-sm font-medium">{it.name}</span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {formatRupiah(it.hargaSewa)}/{it.satuanSewa} (stok: {it.stokTotal})
+                    </span>
+                  </div>
                 </button>
               </li>
             ))

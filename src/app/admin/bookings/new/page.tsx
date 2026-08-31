@@ -14,6 +14,7 @@ export default async function NewBookingPage() {
         hargaSewa: items.hargaSewa,
         stokTotal: items.stokTotal,
         satuanSewa: items.satuanSewa,
+        fotoUrl: items.fotoUrl,
       })
       .from(items)
       .orderBy(items.name),
