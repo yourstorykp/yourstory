@@ -15,6 +15,7 @@ type SetLike = {
   defaultDpPct?: string | number;
   lateFeeRule?: string | null;
   backgroundUrl?: string | null;
+  adminWhatsapp?: string | null;
 };
 
 export function SettingsForm({
@@ -32,9 +33,15 @@ export function SettingsForm({
       </CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="storeName">Nama Toko</Label>
-            <Input id="storeName" name="storeName" defaultValue={settings?.storeName ?? "yourstory.kp"} />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="storeName">Nama Toko</Label>
+              <Input id="storeName" name="storeName" defaultValue={settings?.storeName ?? "yourstory.kp"} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="adminWhatsapp">Nomor WA Admin (Cth: 628123456)</Label>
+              <Input id="adminWhatsapp" name="adminWhatsapp" defaultValue={settings?.adminWhatsapp ?? ""} />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

@@ -1,5 +1,7 @@
-﻿"use server";
+"use server";
 
+import { db } from "@/lib/db";
+import { settings } from "@/db/schema";
 import { parseText } from "@/lib/format";
 import { createBooking, createBookingMulti } from "@/lib/booking";
 
@@ -9,6 +11,7 @@ export type BookingState = {
   kode?: string;
   total?: string;
   dp?: string;
+  adminWa?: string;
 };
 
 export async function createBookingAction(
@@ -48,7 +51,8 @@ export async function createBookingAction(
       qty,
       notes,
     });
-    return { success: true, kode: code, total: String(total), dp: String(dp) };
+    const s = await db.select({ adminWa: settings.adminWhatsapp }).from(settings).limit(1);
+    return { success: true, kode: code, total: String(total), dp: String(dp), adminWa: s[0]?.adminWa || "" };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Gagal membuat pesanan.";
     return { error: msg };
@@ -100,7 +104,8 @@ export async function createCartBookingAction(
       endDate,
       notes,
     });
-    return { success: true, kode: code, total: String(total), dp: String(dp) };
+    const s = await db.select({ adminWa: settings.adminWhatsapp }).from(settings).limit(1);
+    return { success: true, kode: code, total: String(total), dp: String(dp), adminWa: s[0]?.adminWa || "" };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Gagal membuat pesanan.";
     return { error: msg };

@@ -33,10 +33,14 @@ export function CartCheckout() {
   }, [state.success, clear]);
 
   if (state.success) {
+    const waUrl = state.adminWa 
+      ? `https://wa.me/${state.adminWa}?text=${encodeURIComponent(`Halo, saya baru saja membuat pesanan dengan kode *${state.kode}*. Mohon dikonfirmasi.`)}` 
+      : null;
+
     return (
       <div className="rounded-xl border border-forest/30 bg-forest/5 p-6 text-center">
         <h2 className="font-heading text-xl font-semibold text-forest-deep">
-          Booking terkirim!
+          Booking Berhasil Disimpan!
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Kode booking:{" "}
@@ -53,15 +57,23 @@ export function CartCheckout() {
           </div>
         </div>
         <p className="mt-4 text-sm text-muted-foreground">
-          Admin akan mengonfirmasi ketersediaan & mengirim detail pembayaran
-          via WhatsApp. Terima kasih!
+          Langkah selanjutnya: Konfirmasikan pesanan Anda ke admin kami via WhatsApp.
         </p>
-        <Button
-          render={<Link href="/" />}
-          className="mt-5 bg-forest hover:bg-forest-deep"
-        >
-          Kembali ke katalog
-        </Button>
+        {waUrl ? (
+          <Button
+            render={<a href={waUrl} target="_blank" rel="noreferrer" />}
+            className="mt-5 w-full bg-green-600 hover:bg-green-700"
+          >
+            Konfirmasi via WhatsApp
+          </Button>
+        ) : (
+          <Button
+            render={<Link href="/" />}
+            className="mt-5 w-full bg-forest hover:bg-forest-deep"
+          >
+            Kembali ke Beranda
+          </Button>
+        )}
       </div>
     );
   }

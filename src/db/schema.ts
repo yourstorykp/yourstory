@@ -61,6 +61,7 @@ export const settings = pgTable("settings", {
   defaultDpPct: numeric("default_dp_pct", { precision: 5, scale: 2 }).notNull().default("30"),
   lateFeeRule: text("late_fee_rule"),
   backgroundUrl: text("background_url"),
+  adminWhatsapp: text("admin_whatsapp"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 

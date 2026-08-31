@@ -268,6 +268,7 @@ export async function updateSettingsAction(
   const currency = parseText(formData.get("currency")) || "IDR";
   const defaultDpPct = parseNum(formData.get("defaultDpPct"));
   const lateFeeRule = parseText(formData.get("lateFeeRule")) || null;
+  const adminWhatsapp = parseText(formData.get("adminWhatsapp"))?.replace(/\D/g, "") || null;
   
   let backgroundUrl = parseText(formData.get("existingBackgroundUrl")) || null;
   const imageBase64 = parseText(formData.get("imageFileBase64"));
@@ -288,11 +289,12 @@ export async function updateSettingsAction(
         defaultDpPct,
         lateFeeRule,
         backgroundUrl,
+        adminWhatsapp,
       });
     } else {
       await db
         .update(settings)
-        .set({ storeName, currency, defaultDpPct, lateFeeRule, backgroundUrl, updatedAt: new Date() })
+        .set({ storeName, currency, defaultDpPct, lateFeeRule, backgroundUrl, adminWhatsapp, updatedAt: new Date() })
         .where(eq(settings.id, existing[0].id));
     }
   } catch (e) {
