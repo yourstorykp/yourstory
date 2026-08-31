@@ -37,7 +37,7 @@ export function TitipSewaControls({
   const [cy, cm] = currentMonth.split("-").map(Number);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2 w-full">
       <Select
         value={current ? String(current) : ""}
         onValueChange={(v) => push(v, currentMonth)}
@@ -76,11 +76,11 @@ export function TitipSewaControls({
       <Button
         type="button"
         variant="destructive"
-        className="ml-auto bg-destructive hover:bg-destructive/90 text-white"
         size="icon"
         aria-label="Bersihkan riwayat bulan ini"
         title="Bersihkan riwayat bulan ini"
         disabled={!current}
+        className="ml-auto"
         onClick={async () => {
           if (!current) return;
           if (
