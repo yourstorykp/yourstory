@@ -9,7 +9,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Eraser } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { clearConsignorMonthAction } from "@/app/admin/actions";
 
 export function TitipSewaControls({
@@ -75,7 +75,8 @@ export function TitipSewaControls({
 
       <Button
         type="button"
-        variant="outline"
+        variant="destructive"
+        className="ml-auto bg-destructive hover:bg-destructive/90 text-white"
         size="icon"
         aria-label="Bersihkan riwayat bulan ini"
         title="Bersihkan riwayat bulan ini"
@@ -91,7 +92,7 @@ export function TitipSewaControls({
           await clearConsignorMonthAction(current, cy, cm);
         }}
       >
-        <Eraser className="h-4 w-4" />
+        <Trash2 className="h-4 w-4" />
       </Button>
     </div>
   );
