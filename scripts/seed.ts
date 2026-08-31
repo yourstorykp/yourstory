@@ -41,7 +41,7 @@ async function main() {
       console.log(`Admin dibuat: ${email} / ${password}`);
     } else {
       await db.update(users).set({ passwordHash: hash }).where(eq(users.id, existing[0].id));
-      console.log("Admin sudah ada, password diperbarui.");
+      console.log("Admin sudah ada, password diperbarui. Password: " + password);
     }
   }, "create admin");
 
