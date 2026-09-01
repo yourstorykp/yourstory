@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, ne } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BookingsList } from "@/components/admin/bookings-list";
@@ -10,13 +10,12 @@ export const dynamic = "force-dynamic";
 
 export default async function BookingsPage() {
   const rows = await db.query.bookings.findMany({
+    where: ne(bookings.status, "completed"),
     with: { customer: true, items: { with: { item: true } } },
     orderBy: [desc(bookings.createdAt)],
   });
 
-  const data = rows
-    .filter((b) => b.status !== "completed")
-    .map((b) => ({
+  const data = rows.map((b) => ({
     code: bookingDisplayCode(b),
     id: b.id,
     status: b.status,

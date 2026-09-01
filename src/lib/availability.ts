@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { items, bookingItems, bookings } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray, and } from "drizzle-orm";
 
 export type BookedRange = {
   start: string;
@@ -18,31 +18,53 @@ function addDays(isoDate: string, days: number): string {
   return iso(d);
 }
 
+export async function getMultipleItemsAvailability(
+  itemIds: number[]
+): Promise<Record<number, { stokTotal: number; ranges: BookedRange[] }>> {
+  if (itemIds.length === 0) return {};
+
+  const itemsList = await db.select().from(items).where(inArray(items.id, itemIds));
+  const itemsMap: Record<number, { stokTotal: number; ranges: BookedRange[] }> = {};
+  
+  for (const it of itemsList) {
+    itemsMap[it.id] = { stokTotal: it.stokTotal, ranges: [] };
+  }
+
+  const bis = await db
+    .select({
+      itemId: bookingItems.itemId,
+      qty: bookingItems.qty,
+      maintenanceDays: bookingItems.maintenanceDays,
+      startDate: bookings.startDate,
+      endDate: bookings.endDate,
+    })
+    .from(bookingItems)
+    .innerJoin(bookings, eq(bookingItems.bookingId, bookings.id))
+    .where(
+      and(
+        inArray(bookingItems.itemId, itemIds),
+        inArray(bookings.status, ["booking", "confirmed", "active", "returned", "late"])
+      )
+    );
+
+  for (const bi of bis) {
+    if (!bi.itemId || !itemsMap[bi.itemId]) continue;
+    itemsMap[bi.itemId].ranges.push({
+      start: bi.startDate,
+      end: addDays(bi.endDate, bi.maintenanceDays),
+      qty: bi.qty,
+    });
+  }
+
+  return itemsMap;
+}
+
 export async function getItemAvailability(itemId: number): Promise<{
   stokTotal: number;
   ranges: BookedRange[];
 }> {
-  const [item] = await db.select().from(items).where(eq(items.id, itemId));
-  if (!item) return { stokTotal: 0, ranges: [] };
-
-  const bis = await db.query.bookingItems.findMany({
-    where: eq(bookingItems.itemId, itemId),
-    with: { booking: true },
-  });
-
-  const ranges: BookedRange[] = bis
-    .filter(
-      (bi) =>
-        bi.booking &&
-        ["active", "returned", "late"].includes(bi.booking.status),
-    )
-    .map((bi) => ({
-      start: bi.booking!.startDate,
-      end: addDays(bi.booking!.endDate, bi.maintenanceDays),
-      qty: bi.qty,
-    }));
-
-  return { stokTotal: item.stokTotal, ranges };
+  const map = await getMultipleItemsAvailability([itemId]);
+  return map[itemId] || { stokTotal: 0, ranges: [] };
 }
 
 export function hasConflict(
@@ -52,6 +74,8 @@ export function hasConflict(
   end: string,
   qty: number,
 ): boolean {
+  if (qty > stokTotal) return true;
+  
   const s = new Date(start + "T00:00:00Z");
   const e = new Date(end + "T00:00:00Z");
   for (let d = new Date(s); d <= e; d.setUTCDate(d.getUTCDate() + 1)) {
@@ -60,7 +84,7 @@ export function hasConflict(
     for (const r of ranges) {
       if (day >= r.start && day <= r.end) booked += r.qty;
     }
-    if (stokTotal - booked < qty) return true;
+    if (booked + qty > stokTotal) return true;
   }
   return false;
 }

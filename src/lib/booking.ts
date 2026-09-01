@@ -8,7 +8,7 @@ import {
   bookingStatusLog,
 } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
-import { getItemAvailability, hasConflict } from "@/lib/availability";
+import { getItemAvailability, hasConflict, getMultipleItemsAvailability } from "@/lib/availability";
 
 export type BookingInput = {
   itemId: number;
@@ -172,6 +172,8 @@ export async function createBookingMulti(
   const ids = input.items.map((i) => i.itemId);
   const allItems = await db.select().from(items).where(inArray(items.id, ids));
   const byId = new Map(allItems.map((i) => [i.id, i]));
+  
+  const availabilityMap = await getMultipleItemsAvailability(ids);
 
   let total = 0;
   const lines: {
@@ -189,8 +191,8 @@ export async function createBookingMulti(
     if (q > item.stokTotal) {
       throw new Error(`Stok ${item.name} hanya ${item.stokTotal} unit.`);
     }
-    const { stokTotal, ranges } = await getItemAvailability(itemId);
-    if (hasConflict(stokTotal, ranges, startDate, endDate, q)) {
+    const avail = availabilityMap[itemId] || { stokTotal: item.stokTotal, ranges: [] };
+    if (hasConflict(avail.stokTotal, avail.ranges, startDate, endDate, q)) {
       throw new Error(
         `Maaf, stok ${item.name} tidak tersedia pada tanggal yang dipilih.`,
       );

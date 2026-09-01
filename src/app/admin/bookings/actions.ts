@@ -14,7 +14,7 @@ import {
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { parseNum, parseText } from "@/lib/format";
-import { getItemAvailability, hasConflict } from "@/lib/availability";
+import { getMultipleItemsAvailability, hasConflict } from "@/lib/availability";
 import { buildBookingCode } from "@/lib/booking";
 
 const ALLOWED = [
@@ -167,6 +167,8 @@ export async function adminCreateBookingAction(
 
   const allItems = await db.select().from(items);
   const byId = new Map(allItems.map((it) => [it.id, it]));
+  
+  const availabilityMap = await getMultipleItemsAvailability(itemIds);
 
   const lines: { itemId: number; qty: number; price: number; subtotal: number }[] =
     [];
@@ -179,8 +181,8 @@ export async function adminCreateBookingAction(
     if (qty > item.stokTotal) {
       return { error: `Stok ${item.name} hanya ${item.stokTotal} unit.` };
     }
-    const { stokTotal, ranges } = await getItemAvailability(itemId);
-    if (hasConflict(stokTotal, ranges, startDate, endDate, qty)) {
+    const avail = availabilityMap[itemId] || { stokTotal: item.stokTotal, ranges: [] };
+    if (hasConflict(avail.stokTotal, avail.ranges, startDate, endDate, qty)) {
       return {
         error: `Stok ${item.name} tidak tersedia pada tanggal terpilih.`,
       };
