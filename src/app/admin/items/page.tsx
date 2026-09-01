@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { items } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, count } from "drizzle-orm";
+import { PaginationControls } from "@/components/admin/pagination-controls";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,11 +18,21 @@ import { DeleteButton } from "@/components/admin/delete-button";
 import { deleteItemAction } from "../actions";
 import { formatRupiah } from "@/lib/format";
 
-export default async function ItemsPage() {
-  const rows = await db.query.items.findMany({
-    with: { category: true, consignor: true },
-    orderBy: [desc(items.createdAt)],
-  });
+export default async function ItemsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageStr } = await searchParams;
+  const page = Math.max(1, Number(pageStr) || 1);
+  const pageSize = 20;
+
+  const [[totalCount], rows] = await Promise.all([
+    db.select({ v: count() }).from(items),
+    db.query.items.findMany({
+      with: { category: true, consignor: true },
+      orderBy: [desc(items.createdAt)],
+      limit: pageSize,
+      offset: (page - 1) * pageSize,
+    })
+  ]);
+  const totalPages = Math.ceil(totalCount.v / pageSize);
 
   return (
     <div className="space-y-4">
@@ -93,6 +104,7 @@ export default async function ItemsPage() {
             ))}
           </TableBody>
         </Table>
+        <PaginationControls page={page} totalPages={totalPages} baseUrl="/admin/items" />
       </div>
     </div>
   );
